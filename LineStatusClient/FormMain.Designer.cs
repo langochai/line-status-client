@@ -45,12 +45,13 @@
             this.grvMain = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.colLinecode = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colTimestamp = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colStatus = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colStatusText = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colProductcount = new DevExpress.XtraGrid.Columns.GridColumn();
             this.menuNotify = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mnitemShow = new System.Windows.Forms.ToolStripMenuItem();
             this.mnitemExit = new System.Windows.Forms.ToolStripMenuItem();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.colStatus = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)(this.pnlHeader)).BeginInit();
             this.pnlHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pnlSettings)).BeginInit();
@@ -232,12 +233,14 @@
             this.grvMain.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.colLinecode,
             this.colTimestamp,
-            this.colStatus,
-            this.colProductcount});
+            this.colStatusText,
+            this.colProductcount,
+            this.colStatus});
             this.grvMain.GridControl = this.grdMain;
             this.grvMain.Name = "grvMain";
             this.grvMain.OptionsView.ShowFooter = true;
             this.grvMain.OptionsView.ShowGroupPanel = false;
+            this.grvMain.RowCellStyle += new DevExpress.XtraGrid.Views.Grid.RowCellStyleEventHandler(this.grvMain_RowCellStyle);
             // 
             // colLinecode
             // 
@@ -245,7 +248,7 @@
             this.colLinecode.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
             this.colLinecode.AppearanceCell.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
             this.colLinecode.Caption = "Dây chuyền";
-            this.colLinecode.FieldName = "line_code";
+            this.colLinecode.FieldName = "line_nm";
             this.colLinecode.Name = "colLinecode";
             this.colLinecode.OptionsColumn.ReadOnly = true;
             this.colLinecode.Visible = true;
@@ -265,17 +268,17 @@
             this.colTimestamp.Visible = true;
             this.colTimestamp.VisibleIndex = 1;
             // 
-            // colStatus
+            // colStatusText
             // 
-            this.colStatus.AppearanceCell.Options.UseTextOptions = true;
-            this.colStatus.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.colStatus.AppearanceCell.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
-            this.colStatus.Caption = "Trạng thái";
-            this.colStatus.FieldName = "status";
-            this.colStatus.Name = "colStatus";
-            this.colStatus.OptionsColumn.ReadOnly = true;
-            this.colStatus.Visible = true;
-            this.colStatus.VisibleIndex = 2;
+            this.colStatusText.AppearanceCell.Options.UseTextOptions = true;
+            this.colStatusText.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.colStatusText.AppearanceCell.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
+            this.colStatusText.Caption = "Trạng thái";
+            this.colStatusText.FieldName = "status_text";
+            this.colStatusText.Name = "colStatusText";
+            this.colStatusText.OptionsColumn.ReadOnly = true;
+            this.colStatusText.Visible = true;
+            this.colStatusText.VisibleIndex = 2;
             // 
             // colProductcount
             // 
@@ -319,6 +322,12 @@
             this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
             this.notifyIcon.Text = "Trạng thái dây chuyền";
             this.notifyIcon.DoubleClick += new System.EventHandler(this.notifyIcon_DoubleClick);
+            // 
+            // colStatus
+            // 
+            this.colStatus.Caption = "Status";
+            this.colStatus.FieldName = "status_text";
+            this.colStatus.Name = "colStatus";
             // 
             // FormMain
             // 
@@ -368,7 +377,7 @@
         private System.Windows.Forms.NotifyIcon notifyIcon;
         private DevExpress.XtraGrid.Columns.GridColumn colLinecode;
         private DevExpress.XtraGrid.Columns.GridColumn colTimestamp;
-        private DevExpress.XtraGrid.Columns.GridColumn colStatus;
+        private DevExpress.XtraGrid.Columns.GridColumn colStatusText;
         private DevExpress.XtraGrid.Columns.GridColumn colProductcount;
         private DevExpress.XtraEditors.LabelControl lblDateStart;
         private DevExpress.XtraEditors.DateEdit dtpDateStart;
@@ -377,6 +386,7 @@
         private DevExpress.XtraEditors.TextEdit txtSearch;
         private DevExpress.XtraEditors.SimpleButton btnSearch;
         private DevExpress.XtraEditors.SimpleButton btnExport;
+        private DevExpress.XtraGrid.Columns.GridColumn colStatus;
     }
 }
 

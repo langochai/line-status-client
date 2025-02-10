@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using DevExpress.XtraEditors;
+using DevExpress.XtraGrid.Views.Grid;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using LineStatusClient.Common;
 using LineStatusClient.Models;
@@ -272,6 +273,39 @@ namespace LineStatusClient
                     return saveFileDialog.FileName;
                 }
                 else return "";
+            }
+        }
+
+        private void grvMain_RowCellStyle(object sender, DevExpress.XtraGrid.Views.Grid.RowCellStyleEventArgs e)
+        {
+            GridView view = sender as GridView;
+            if (e.RowHandle >= 0) // Kiểm tra có phải là hàng hợp lệ không
+            {
+                int status = Convert.ToInt32(view.GetRowCellValue(e.RowHandle, "status"));
+
+                switch (status)
+                {
+                    case 0: // Không chạy
+                        e.Appearance.BackColor = System.Drawing.Color.White;
+                        e.Appearance.ForeColor = System.Drawing.Color.Black;
+                        break;
+                    case 1: // Chạy
+                        e.Appearance.BackColor = System.Drawing.Color.Green;
+                        e.Appearance.ForeColor = System.Drawing.Color.White;
+                        break;
+                    case 2: // Nghỉ trưa
+                        e.Appearance.BackColor = System.Drawing.Color.Yellow;
+                        e.Appearance.ForeColor = System.Drawing.Color.Black;
+                        break;
+                    case 3:  // Dừng
+                        e.Appearance.BackColor = System.Drawing.Color.OrangeRed;
+                        e.Appearance.ForeColor = System.Drawing.Color.White;
+                        break;
+                    default:
+                        e.Appearance.BackColor = System.Drawing.Color.White;
+                        e.Appearance.ForeColor = System.Drawing.Color.Black;
+                        break;
+                }
             }
         }
     }
