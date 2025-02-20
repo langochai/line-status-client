@@ -1,4 +1,4 @@
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -54,11 +54,13 @@
     <Reference Include="DevExpress.Data.v23.1" />
     <Reference Include="DevExpress.Utils.v23.1" />
     <Reference Include="DevExpress.Sparkline.v23.1.Core" />
+    <Reference Include="DevExpress.XtraBars.v23.1, Version=23.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.XtraEditors.v23.1" />
     <Reference Include="DevExpress.Printing.v23.1.Core" />
     <Reference Include="DevExpress.Drawing.v23.1" />
     <Reference Include="DevExpress.XtraGrid.v23.1, Version=23.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.XtraLayout.v23.1, Version=23.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraNavBar.v23.1, Version=23.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.XtraPrinting.v23.1, Version=23.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
     <Reference Include="DocumentFormat.OpenXml, Version=3.1.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
       <HintPath>..\packages\DocumentFormat.OpenXml.3.1.1\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
@@ -198,6 +200,7 @@
     <Compile Include="Common\SqlDependencyEx.cs" />
     <Compile Include="Common\SQLHelper.cs" />
     <Compile Include="Common\SQLUtilities.cs" />
+    <Compile Include="DTOs\Line_downtime_history_DTO.cs" />
     <Compile Include="DTOs\UserSettings.cs" />
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
