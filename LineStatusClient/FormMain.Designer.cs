@@ -57,7 +57,7 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.btnSetting = new DevExpress.XtraEditors.SimpleButton();
             this.flyoutPanel1 = new DevExpress.Utils.FlyoutPanel();
-            this.btnExportExcel = new DevExpress.XtraEditors.SimpleButton();
+            this.btnHistory = new DevExpress.XtraEditors.SimpleButton();
             this.btnRunAtStartup = new DevExpress.XtraEditors.SimpleButton();
             this.btnHide = new DevExpress.XtraEditors.SimpleButton();
             ((System.ComponentModel.ISupportInitialize)(this.pnlHeader)).BeginInit();
@@ -146,6 +146,8 @@
             this.colNo.DisplayFormat.FormatString = "n0";
             this.colNo.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
             this.colNo.FieldName = "No";
+            this.colNo.MaxWidth = 44;
+            this.colNo.MinWidth = 44;
             this.colNo.Name = "colNo";
             this.colNo.OptionsColumn.AllowEdit = false;
             this.colNo.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.False;
@@ -237,7 +239,7 @@
             this.colShift.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
             this.colShift.AppearanceCell.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
             this.colShift.Caption = "Ca làm";
-            this.colShift.FieldName = "shift";
+            this.colShift.FieldName = "shift_text";
             this.colShift.Name = "colShift";
             this.colShift.OptionsColumn.AllowEdit = false;
             this.colShift.Visible = true;
@@ -321,7 +323,7 @@
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
-            this.label3.Location = new System.Drawing.Point(985, 13);
+            this.label3.Location = new System.Drawing.Point(987, 13);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(82, 20);
             this.label3.TabIndex = 2;
@@ -332,7 +334,7 @@
             this.textBox3.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.textBox3.BackColor = System.Drawing.Color.Yellow;
             this.textBox3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBox3.Location = new System.Drawing.Point(946, 8);
+            this.textBox3.Location = new System.Drawing.Point(948, 8);
             this.textBox3.Multiline = true;
             this.textBox3.Name = "textBox3";
             this.textBox3.ReadOnly = true;
@@ -344,7 +346,7 @@
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
-            this.label2.Location = new System.Drawing.Point(871, 13);
+            this.label2.Location = new System.Drawing.Point(875, 13);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(49, 20);
             this.label2.TabIndex = 2;
@@ -355,7 +357,7 @@
             this.textBox2.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.textBox2.BackColor = System.Drawing.Color.SpringGreen;
             this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBox2.Location = new System.Drawing.Point(832, 8);
+            this.textBox2.Location = new System.Drawing.Point(836, 8);
             this.textBox2.Multiline = true;
             this.textBox2.Name = "textBox2";
             this.textBox2.ReadOnly = true;
@@ -367,7 +369,7 @@
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(663, 13);
+            this.label1.Location = new System.Drawing.Point(664, 13);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(146, 20);
             this.label1.TabIndex = 2;
@@ -378,7 +380,7 @@
             this.textBox1.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.textBox1.BackColor = System.Drawing.Color.White;
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBox1.Location = new System.Drawing.Point(624, 8);
+            this.textBox1.Location = new System.Drawing.Point(625, 8);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
@@ -401,7 +403,7 @@
             // 
             this.flyoutPanel1.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
             this.flyoutPanel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.flyoutPanel1.Controls.Add(this.btnExportExcel);
+            this.flyoutPanel1.Controls.Add(this.btnHistory);
             this.flyoutPanel1.Controls.Add(this.btnRunAtStartup);
             this.flyoutPanel1.Controls.Add(this.btnHide);
             this.flyoutPanel1.Location = new System.Drawing.Point(73, 409);
@@ -412,18 +414,19 @@
             this.flyoutPanel1.Size = new System.Drawing.Size(221, 145);
             this.flyoutPanel1.TabIndex = 3;
             // 
-            // btnExportExcel
+            // btnHistory
             // 
-            this.btnExportExcel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.btnHistory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExportExcel.Appearance.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnExportExcel.Appearance.Options.UseFont = true;
-            this.btnExportExcel.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("btnExportExcel.ImageOptions.Image")));
-            this.btnExportExcel.Location = new System.Drawing.Point(4, 98);
-            this.btnExportExcel.Name = "btnExportExcel";
-            this.btnExportExcel.Size = new System.Drawing.Size(211, 41);
-            this.btnExportExcel.TabIndex = 3;
-            this.btnExportExcel.Text = "Xuất excel";
+            this.btnHistory.Appearance.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnHistory.Appearance.Options.UseFont = true;
+            this.btnHistory.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("btnHistory.ImageOptions.Image")));
+            this.btnHistory.Location = new System.Drawing.Point(4, 98);
+            this.btnHistory.Name = "btnHistory";
+            this.btnHistory.Size = new System.Drawing.Size(211, 41);
+            this.btnHistory.TabIndex = 3;
+            this.btnHistory.Text = "Lịch sử";
+            this.btnHistory.Click += new System.EventHandler(this.btnHistory_Click);
             // 
             // btnRunAtStartup
             // 
@@ -440,6 +443,7 @@
             this.btnRunAtStartup.Name = "btnRunAtStartup";
             this.btnRunAtStartup.Size = new System.Drawing.Size(211, 41);
             this.btnRunAtStartup.TabIndex = 3;
+            this.btnRunAtStartup.Tag = "RunStartup";
             this.btnRunAtStartup.Text = "Chạy cùng hệ thống";
             this.btnRunAtStartup.Click += new System.EventHandler(this.btnRunAtStartup_Click);
             // 
@@ -514,7 +518,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBox2;
         private DevExpress.Utils.FlyoutPanel flyoutPanel1;
-        private DevExpress.XtraEditors.SimpleButton btnExportExcel;
+        private DevExpress.XtraEditors.SimpleButton btnHistory;
         private DevExpress.XtraEditors.SimpleButton btnRunAtStartup;
         private DevExpress.XtraEditors.SimpleButton btnHide;
         private System.Windows.Forms.Label label5;

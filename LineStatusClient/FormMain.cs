@@ -9,6 +9,7 @@ using DocumentFormat.OpenXml.Drawing.Diagrams;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using LineStatusClient.Common;
 using LineStatusClient.DTOs;
+using LineStatusClient.Froms;
 using LineStatusClient.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.Win32;
@@ -24,8 +25,8 @@ namespace LineStatusClient
 {
     public partial class FormMain : XtraForm
     {
-        private bool _isRunOnStartUp = false;
-        private System.Windows.Forms.Timer timer;
+        private System.Windows.Forms.Timer timerRunAndDown;
+        private frmHistory frmHistoryShow = null;
         public FormMain()
         {
             InitializeComponent();
@@ -44,10 +45,10 @@ namespace LineStatusClient
 
         private void InitializeTimer()
         {
-            timer = new System.Windows.Forms.Timer();
-            timer.Interval = 1000; // Mỗi giây
-            timer.Tick += Timer_Tick;
-            timer.Start();
+            timerRunAndDown = new System.Windows.Forms.Timer();
+            timerRunAndDown.Interval = 1000; // Mỗi giây
+            timerRunAndDown.Tick += Timer_Tick;
+            timerRunAndDown.Start();
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -145,7 +146,14 @@ namespace LineStatusClient
         #region Run on start up
         private void btnRunAtStartup_Click(object sender, EventArgs e)
         {
-            if (_isRunOnStartUp) RemoveFromStartup();
+
+            RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", false);
+            if (key != null)
+            {
+                object value = key.GetValue("LineStatusClient");
+                if (value != null) RemoveFromStartup();
+                else AddToStartup();
+            }
             else AddToStartup();
         }
 
@@ -157,9 +165,10 @@ namespace LineStatusClient
                 if (key != null)
                 {
                     object value = key.GetValue("LineStatusClient");
-                    _isRunOnStartUp = value != null;
-                    if (_isRunOnStartUp) btnRunAtStartup.Appearance.BackColor = System.Drawing.Color.LimeGreen;
-                    else btnRunAtStartup.Appearance.BackColor = System.Drawing.Color.Silver;
+                    if (value != null)
+                        btnRunAtStartup.Appearance.BackColor = System.Drawing.Color.LimeGreen;
+                    else 
+                        btnRunAtStartup.Appearance.BackColor = System.Drawing.Color.Silver;
                 }
             }
             catch (Exception ex)
@@ -177,7 +186,6 @@ namespace LineStatusClient
 
                 RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
                 key.SetValue(appName, "\"" + appPath + "\"");
-                _isRunOnStartUp = true;
                 btnRunAtStartup.Appearance.BackColor = System.Drawing.Color.LimeGreen;
             }
             catch (Exception ex)
@@ -194,7 +202,6 @@ namespace LineStatusClient
 
                 RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
                 key.DeleteValue(appName, false);
-                _isRunOnStartUp = false;
                 btnRunAtStartup.Appearance.BackColor = System.Drawing.Color.Silver;
             }
             catch (Exception ex)
@@ -270,124 +277,6 @@ namespace LineStatusClient
         }
         #endregion
 
-        #region EXPORT EXCEL
-
-        //private void btnExport_Click(object sender, EventArgs e)
-        //{
-        //    var savePath = OpenSaveFileForm("Lịch sử trạng thái dây chuyền");
-        //    if (string.IsNullOrEmpty(savePath)) return;
-        //    Task.Run(() =>
-        //    {
-        //        try
-        //        {
-        //            btnExport.BeginInvoke(new Action(() => { btnExport.Enabled = false; }));
-        //            var (dateStart, dateEnd) = (Convert.ToDateTime(dtpDateStart.EditValue).Date, Convert.ToDateTime(dtpDateEnd.EditValue).Date.AddDays(1).AddMilliseconds(-3));
-        //            var textFilter = txtSearch.Text.Trim();
-        //            var allLineStatus = SQLHelper<Line_downtime_history>.ProcedureToList("spGetLineStatusChangeTime",
-        //            new string[] { "@DateStart", "@DateEnd", "@LineCode" },
-        //            new object[] { dateStart, dateEnd, textFilter });
-        //            var data = allLineStatus
-        //                .GroupBy(d => new { d.line_code, d.timestamp.Date })
-        //                .Select(d => new
-        //                {
-        //                    d.Key.line_code,
-        //                    d.Key.Date,
-        //                    Items = d.ToList()
-        //                }).ToList();
-        //            string excelFilename = $"template.xlsx";
-        //            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "refs\\" + excelFilename);
-        //            using (var workbook = new XLWorkbook(filePath))
-        //            {
-        //                var template = workbook.Worksheet(1);
-        //                using (var newWorkbook = new XLWorkbook())
-        //                {
-        //                    for (var i = 0; i <= data.Count - 1; i++)
-        //                    {
-        //                        var newSheet = template.CopyTo(newWorkbook, i.ToString());
-        //                        newSheet.Cell(1, 1).Value = $"Bảng quản lý sản xuất dây chuyền {data[i].line_code}   ngày: {data[i].Date}";
-
-        //                        int col = 2;
-        //                        foreach (var result in data[i].Items)
-        //                        {
-        //                            newSheet.Cell(3, col).Value = result.timestamp.ToString("HH:mm:ss");
-        //                            switch (result.status)
-        //                            {
-        //                                case 0:
-        //                                    newSheet.Cell(2, col).Value = "Không chạy";
-        //                                    newSheet.Cell(2, col).Style.Font.FontColor = XLColor.WhiteSmoke;
-        //                                    newSheet.Cell(2, col).Style.Fill.BackgroundColor = XLColor.WhiteSmoke;
-        //                                    break;
-        //                                case 1:
-        //                                    newSheet.Cell(2, col).Value = "Chạy";
-        //                                    newSheet.Cell(2, col).Style.Font.FontColor = XLColor.Green;
-        //                                    newSheet.Cell(2, col).Style.Fill.BackgroundColor = XLColor.Green;
-        //                                    break;
-        //                                case 2:
-        //                                    newSheet.Cell(2, col).Value = "Nghỉ trưa";
-        //                                    newSheet.Cell(2, col).Style.Font.FontColor = XLColor.Yellow;
-        //                                    newSheet.Cell(2, col).Style.Fill.BackgroundColor = XLColor.Yellow;
-        //                                    break;
-        //                                case 3:
-        //                                    newSheet.Cell(2, col).Value = "Dừng";
-        //                                    newSheet.Cell(2, col).Style.Font.FontColor = XLColor.OrangeRed;
-        //                                    newSheet.Cell(2, col).Style.Fill.BackgroundColor = XLColor.OrangeRed;
-        //                                    break;
-        //                                default:
-        //                                    break;
-        //                            }
-        //                            col += 1;
-        //                        }
-
-        //                        var query = $@"
-        //                            select * from Line_downtime_history
-        //                            where [timestamp] between '{dateStart:yyyy-MM-dd HH:mm:ss:fff}' and '{dateEnd:yyyy-MM-dd HH:mm:ss:fff}'
-        //                            and line_code = '{data[i].line_code}'";
-        //                        var productList = SQLHelper<Line_downtime_history>.SqlToList(query);
-        //                        int row = 8;
-        //                        foreach (var item in productList)
-        //                        {
-        //                            newSheet.Cell(row, 1).Value = item.timestamp.ToString("yyyy/MM/dd HH:mm:ss");
-        //                            newSheet.Cell(row, 2).Value = item.product_count;
-        //                            row++;
-        //                        }
-        //                    }
-        //                    newWorkbook.SaveAs(savePath);
-        //                }
-        //            };
-        //            this.BeginInvoke(new Action(() =>
-        //            {
-        //                MessageBox.Show("Xuất file thành công", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //            }));
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            this.BeginInvoke(new Action(() =>
-        //            {
-        //                MessageBox.Show(ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //            }));
-        //        }
-        //        finally
-        //        {
-        //            btnExport.BeginInvoke(new Action(() => { btnExport.Enabled = true; }));
-        //        }
-        //    });
-        //}
-        private string OpenSaveFileForm(string fileName)
-        {
-            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
-            {
-                saveFileDialog.Filter = "Excel Files|*.xlsx";
-                saveFileDialog.Title = "Lưu file excel";
-                saveFileDialog.FileName = fileName;
-                if (saveFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    return saveFileDialog.FileName;
-                }
-                else return "";
-            }
-        }
-        #endregion
-
         #region OTHERS
 
         //tự sinh STT
@@ -406,7 +295,6 @@ namespace LineStatusClient
             if (e.RowHandle >= 0) // Kiểm tra có phải là hàng hợp lệ không
             {
                 int status = Convert.ToInt32(view.GetRowCellValue(e.RowHandle, "status"));
-
                 switch (status)
                 {
                     case 0: // Không chạy
@@ -438,7 +326,25 @@ namespace LineStatusClient
             flyoutPanel1.ShowBeakForm();
         }
 
-        #endregion
+        private void btnHistory_Click(object sender, EventArgs e)
+        {
+            if (frmHistoryShow == null || frmHistoryShow.IsDisposed)
+            {
+                frmHistoryShow = new frmHistory();
+                frmHistoryShow.Show();
+            }
+            else
+            {
+                if (frmHistoryShow.WindowState == FormWindowState.Minimized)
+                    frmHistoryShow.WindowState = FormWindowState.Maximized;
+                frmHistoryShow.TopMost = true;  // Đảm bảo form hiển thị trên cùng
+                frmHistoryShow.TopMost = false; // Trả về trạng thái bình thường
+                frmHistoryShow.BringToFront();
+                frmHistoryShow.Activate();
+            }
+            
+        }
 
+        #endregion
     }
 }
