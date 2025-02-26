@@ -96,8 +96,7 @@
             this.cb_Shift.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.cb_Shift.FormattingEnabled = true;
             this.cb_Shift.Items.AddRange(new object[] {
-            "Sáng",
-            "Chiều",
+            "Ngày",
             "Đêm"});
             this.cb_Shift.Location = new System.Drawing.Point(568, 12);
             this.cb_Shift.Name = "cb_Shift";
@@ -325,7 +324,7 @@
             this.colstatus_text.Name = "colstatus_text";
             this.colstatus_text.Visible = true;
             this.colstatus_text.VisibleIndex = 3;
-            this.colstatus_text.Width = 209;
+            this.colstatus_text.Width = 135;
             // 
             // colproduct_count
             // 
@@ -336,7 +335,7 @@
             this.colproduct_count.Name = "colproduct_count";
             this.colproduct_count.Visible = true;
             this.colproduct_count.VisibleIndex = 4;
-            this.colproduct_count.Width = 172;
+            this.colproduct_count.Width = 178;
             // 
             // frmHistory
             // 

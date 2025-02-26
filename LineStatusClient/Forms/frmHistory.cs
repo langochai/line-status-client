@@ -50,12 +50,9 @@ namespace LineStatusClient.Froms
         {
             try
             {
-                //DateTime date = Convert.ToDateTime(dtpDateTime.EditValue).Date;
-                //var dateStart = date.ToString("yyyy-MM-dd 00:00:00");
-                //var dateEnd = date.ToString("yyyy-MM-dd 23:59:59");
                 DateTime date = Convert.ToDateTime(dtpDateTime.EditValue).Date;
-                DateTime dateStart = date.AddHours(6); // Bắt đầu từ 06:00:00 hôm nay
-                DateTime dateEnd = date.AddDays(1).AddHours(5).AddMinutes(59).AddSeconds(59); // Kết thúc lúc 05:59:59 ngày mai
+                DateTime dateStart = date.AddHours(8); // Bắt đầu từ 06:00:00 hôm nay
+                DateTime dateEnd = date.AddDays(1).AddHours(7).AddMinutes(59).AddSeconds(59); // Kết thúc lúc 05:59:59 ngày mai
 
                 string strDateStart = dateStart.ToString("yyyy-MM-dd HH:mm:ss");
                 string strDateEnd = dateEnd.ToString("yyyy-MM-dd HH:mm:ss");
@@ -67,14 +64,6 @@ namespace LineStatusClient.Froms
                 new string[] { "@DateStart", "@DateEnd", "@LineCode", "@Shift" },
                 new object[] { dateStart, dateEnd, lineCode, shift });
                 grdData.DataSource = allLineStatus;
-                //var data = allLineStatus
-                //    .GroupBy(d => new { d.line_code, d.timestamp.Date })
-                //    .Select(d => new
-                //    {
-                //        d.Key.line_code,
-                //        d.Key.Date,
-                //        Items = d.ToList()
-                //    }).ToList();
             }
             catch (Exception)
             {
