@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using DevExpress.Utils.Extensions;
 using DevExpress.Utils.Win;
 using DevExpress.XtraBars;
 using DevExpress.XtraBars.Docking2010.Views.WindowsUI;
@@ -9,6 +10,7 @@ using DocumentFormat.OpenXml.Drawing.Diagrams;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using LineStatusClient.Common;
 using LineStatusClient.DTOs;
+using LineStatusClient.Forms.Email;
 using LineStatusClient.Froms;
 using LineStatusClient.Models;
 using Microsoft.Data.SqlClient;
@@ -26,7 +28,7 @@ namespace LineStatusClient
     public partial class FormMain : XtraForm
     {
         private System.Windows.Forms.Timer timerRunAndDown;
-        private frmHistory frmHistoryShow = null;
+
         public FormMain()
         {
             InitializeComponent();
@@ -58,7 +60,7 @@ namespace LineStatusClient
                 GridView gridView = grvMain;
                 for (int i = 0; i < gridView.RowCount; i++)
                 {
-                    int status = Convert.ToInt32(gridView.GetRowCellValue(i, "status"));
+                    int status = SQLUtilities.ToInt(gridView.GetRowCellValue(i, "status"));
 
                     if (status == 1) // Cộng vào TotalRunningTime
                     {
@@ -82,24 +84,24 @@ namespace LineStatusClient
         {
             try
             {
-                TimeSpan ts = TimeSpan.Parse(time);
-                ts = ts.Add(TimeSpan.FromSeconds(1));
-                return ts.ToString(@"hh\:mm\:ss");
-            }
-            catch (Exception ex)
-            {
-                ErrorLogger.Write(ex);
-                return "00:00:00";
-            }
-        }
+                string[] parts = time.Split(':');
+                int hours = int.Parse(parts[0]);
+                int minutes = int.Parse(parts[1]);
+                int seconds = int.Parse(parts[2]);
 
-        private string AddElapsedTime(string currentTime, TimeSpan elapsedTime)
-        {
-            try
-            {
-                TimeSpan ts = TimeSpan.Parse(currentTime);
-                ts = ts.Add(elapsedTime);
-                return ts.ToString(@"hh\:mm\:ss");
+                seconds++;
+                if (seconds >= 60)
+                {
+                    seconds = 0;
+                    minutes++;
+                }
+                if (minutes >= 60)
+                {
+                    minutes = 0;
+                    hours++;
+                }
+
+                return $"{hours:D2}:{minutes:D2}:{seconds:D2}";
             }
             catch (Exception ex)
             {
@@ -167,7 +169,7 @@ namespace LineStatusClient
                     object value = key.GetValue("LineStatusClient");
                     if (value != null)
                         btnRunAtStartup.Appearance.BackColor = System.Drawing.Color.LimeGreen;
-                    else 
+                    else
                         btnRunAtStartup.Appearance.BackColor = System.Drawing.Color.Silver;
                 }
             }
@@ -227,19 +229,17 @@ namespace LineStatusClient
                         new string[] { },
                         new object[] { });
 
-                    foreach (Line_downtime_history_DTO row in data)
-                    {
-                        if (row.WorkDate != null)
-                        {
-                            DateTime workDate = row.WorkDate;
-                            TimeSpan elapsedTime = DateTime.Now - workDate; // Thời gian đã trôi qua từ WorkDate
+                    //foreach (Line_downtime_history_DTO row in data)
+                    //{
+                    //    if (row.WorkDate != null)
+                    //    {
+                    //        DateTime workDate = row.WorkDate;
+                    //        TimeSpan elapsedTime = DateTime.Now - workDate; // Thời gian đã trôi qua từ WorkDate
 
-                            if (row.status == 1) // Nếu đang chạy
-                                row.TotalRunningTime = AddElapsedTime(row.TotalRunningTime, elapsedTime);
-                            else if (row.status == 3) // Nếu đang dừng
-                                row.TotalDowntime = AddElapsedTime(row.TotalDowntime, elapsedTime);
-                        }
-                    }
+                    //        row.TotalRunningTime = AddElapsedTime(row.TotalRunningTime, elapsedTime);
+                    //        row.TotalDowntime = AddElapsedTime(row.TotalDowntime, elapsedTime);
+                    //    }
+                    //}
 
                     grdMain.DataSource = data;
                 }));
@@ -258,22 +258,6 @@ namespace LineStatusClient
             var dependency = new SqlDependencyEx(Settings.connectionString, dbName, "Line_downtime_history", identity: 2);
             dependency.TableChanged += (sender, e) => { LoadData(); };
             dependency.Start();
-        }
-
-        private void Datepicker_EditValueChanged(object sender, EventArgs e)
-        {
-            var datepicker = sender as DateEdit;
-            if (datepicker.EditValue == null) datepicker.EditValue = DateTime.Now;
-        }
-
-        private void btnSearch_Click(object sender, EventArgs e)
-        {
-            LoadData();
-        }
-
-        private void txtSearch_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter) LoadData();
         }
         #endregion
 
@@ -326,8 +310,10 @@ namespace LineStatusClient
             flyoutPanel1.ShowBeakForm();
         }
 
+        private frmHistory frmHistoryShow = null;
         private void btnHistory_Click(object sender, EventArgs e)
         {
+            flyoutPanel1.HideBeakForm();
             if (frmHistoryShow == null || frmHistoryShow.IsDisposed)
             {
                 frmHistoryShow = new frmHistory();
@@ -342,9 +328,30 @@ namespace LineStatusClient
                 frmHistoryShow.BringToFront();
                 frmHistoryShow.Activate();
             }
-            
+        }
+
+        private frmEmail frmEmailShow = null;
+        private void btnEmail_Click(object sender, EventArgs e)
+        {
+            flyoutPanel1.HideBeakForm();
+            if (frmEmailShow == null || frmEmailShow.IsDisposed)
+            {
+                frmEmailShow = new frmEmail();
+                frmEmailShow.Show();
+            }
+            else
+            {
+                if (frmEmailShow.WindowState == FormWindowState.Minimized)
+                    frmEmailShow.WindowState = FormWindowState.Maximized;
+                frmEmailShow.TopMost = true;
+                frmEmailShow.TopMost = false;
+                frmEmailShow.BringToFront();
+                frmEmailShow.Activate();
+            }
         }
 
         #endregion
+
+
     }
 }

@@ -4,13 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
+using System.Threading;
 
 namespace LineStatusClient.Common
 {
     public static class SQLHelper<T> where T : class, new()
     {
         private static readonly string connectionString = Settings.connectionString;
-
+        public static int Timeout = 2000;
         public static T ProcedureToModel(string procedureName, string[] paramName, object[] paramValue)
         {
             T model = new T();
@@ -122,6 +123,87 @@ namespace LineStatusClient.Common
             finally
             {
                 mySqlConnection.Close();
+            }
+
+            return lst;
+        }
+
+        public static void DeleteModelByID(Int64 id)
+        {
+            SqlConnection conn = new SqlConnection(connectionString);
+            T model = new T();
+            Type type = model.GetType();
+            string tableName = type.Name.StartsWith("Model") ? type.Name : type.Name.Replace("Model", "");
+            try
+            {
+                string sql = string.Format("DELETE FROM [{0}] WHERE ID = {1}", tableName, id);
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.CommandTimeout = Timeout;
+                cmd.CommandType = CommandType.Text;
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.ToString());
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        public static T FindByID(Int64 id)
+        {
+            SqlConnection conn = new SqlConnection(connectionString);
+            T model = new T();
+            Type type = model.GetType();
+            string tableName = type.Name.StartsWith("Model") ? type.Name : type.Name.Replace("Model", "");
+            try
+            {
+                string sql = string.Format("SELECT top 1 * FROM [{0}] with (nolock) WHERE ID = {1}", tableName, id);
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.CommandTimeout = Timeout;
+                cmd.CommandType = CommandType.Text;
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                model = reader.MapToSingle<T>();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.ToString());
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return model;
+        }
+
+        public static List<T> FindAll()
+        {
+            SqlConnection conn = new SqlConnection(connectionString);
+            List<T> lst = new List<T>();
+            T model = new T();
+            Type type = model.GetType();
+            string tableName = type.Name.StartsWith("Model") ? type.Name : type.Name.Replace("Model", "");
+            try
+            {
+                string sql = string.Format("SELECT * FROM [{0}] with (nolock)", tableName);
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.CommandTimeout = Timeout;
+                cmd.CommandType = CommandType.Text;
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                lst = reader.MapToList<T>();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.ToString());
+            }
+            finally
+            {
+                conn.Close();
             }
 
             return lst;
@@ -271,6 +353,81 @@ namespace LineStatusClient.Common
                 if (conn.State != ConnectionState.Closed) conn.Close();
                 conn.Dispose();
             }
+        }
+        public static ResultQuery UpdateModel(T model)
+        {
+            ResultQuery r = new ResultQuery();
+            r.TotalRow = 0;
+            Type type = model.GetType();
+            SqlConnection conn = new SqlConnection(connectionString);
+            try
+            {
+                string sql = SQLUpdate(model);
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandTimeout = Timeout;
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = sql;
+
+                PropertyInfo[] propertiesName = type.GetProperties();
+                for (int i = 0; i < propertiesName.Length; i++)
+                {
+                    SqlDbType dbType = ConvertToSQLType(propertiesName[i].PropertyType);
+                    object value = propertiesName[i].GetValue(model, null);
+
+                    if (propertiesName[i].Name.ToLower().Equals("updatedby"))
+                    {
+                        cmd.Parameters.Add("@" + propertiesName[i].Name, SqlDbType.NVarChar).Value = (value ?? "");
+                    }
+                    else if (propertiesName[i].Name.ToLower().Equals("updateddate"))
+                    {
+                        cmd.Parameters.Add("@" + propertiesName[i].Name, SqlDbType.DateTime).Value = DateTime.Now;
+                    }
+                    else if (propertiesName[i].Name.ToLower().Equals("userupdateid"))
+                    {
+                        cmd.Parameters.Add("@" + propertiesName[i].Name, SqlDbType.Int).Value = (value ?? 0);
+                    }
+                    else if (value != null)
+                    {
+                        if (propertiesName[i].PropertyType.Equals(typeof(DateTime)))
+                        {
+                            if ((DateTime)value == DateTime.MinValue)
+                                value = DateTime.MinValue;
+                        }
+                        if (propertiesName[i].PropertyType.Name.Equals("Byte[]"))
+                        {
+                            cmd.Parameters.Add("@" + propertiesName[i].Name, SqlDbType.Image).Value = value;
+                        }
+                        else
+                        {
+                            cmd.Parameters.Add("@" + propertiesName[i].Name, dbType).Value = value;
+                        }
+                    }
+                    else
+                    {
+                        if (propertiesName[i].PropertyType.Equals(typeof(DateTime?)))
+                        {
+                            cmd.Parameters.Add("@" + propertiesName[i].Name, dbType).Value = DBNull.Value;
+                        }
+                        else
+                            cmd.Parameters.Add("@" + propertiesName[i].Name, dbType).Value = "";
+                    }
+                }
+                conn.Open();
+                r.TotalRow = cmd.ExecuteNonQuery();
+                r.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                r.IsSuccess = false;
+                r.ErrorText = ex.ToString();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                if (conn.State != ConnectionState.Closed) conn.Close();
+                conn.Dispose();
+            }
+            return r;
         }
 
         public static void Update(T model, string[] whereColumns = null, string[] updateColumns = null, string userName = "")
@@ -446,5 +603,13 @@ namespace LineStatusClient.Common
             }
             return SqlDbType.NVarChar;
         }
+    }
+
+    public class ResultQuery
+    {
+        public int ID { get; set; }
+        public int TotalRow { get; set; }
+        public bool IsSuccess { get; set; }
+        public string ErrorText { get; set; }
     }
 }

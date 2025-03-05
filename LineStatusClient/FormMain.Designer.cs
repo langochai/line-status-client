@@ -60,6 +60,7 @@
             this.btnHistory = new DevExpress.XtraEditors.SimpleButton();
             this.btnRunAtStartup = new DevExpress.XtraEditors.SimpleButton();
             this.btnHide = new DevExpress.XtraEditors.SimpleButton();
+            this.btnEmail = new DevExpress.XtraEditors.SimpleButton();
             ((System.ComponentModel.ISupportInitialize)(this.pnlHeader)).BeginInit();
             this.pnlHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grdMain)).BeginInit();
@@ -403,15 +404,16 @@
             // 
             this.flyoutPanel1.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
             this.flyoutPanel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.flyoutPanel1.Controls.Add(this.btnEmail);
             this.flyoutPanel1.Controls.Add(this.btnHistory);
             this.flyoutPanel1.Controls.Add(this.btnRunAtStartup);
             this.flyoutPanel1.Controls.Add(this.btnHide);
-            this.flyoutPanel1.Location = new System.Drawing.Point(73, 409);
+            this.flyoutPanel1.Location = new System.Drawing.Point(73, 362);
             this.flyoutPanel1.Name = "flyoutPanel1";
             this.flyoutPanel1.OptionsButtonPanel.ButtonPanelContentAlignment = System.Drawing.ContentAlignment.MiddleCenter;
             this.flyoutPanel1.OptionsButtonPanel.ButtonPanelHeight = 100;
             this.flyoutPanel1.OwnerControl = this.btnSetting;
-            this.flyoutPanel1.Size = new System.Drawing.Size(221, 145);
+            this.flyoutPanel1.Size = new System.Drawing.Size(221, 192);
             this.flyoutPanel1.TabIndex = 3;
             // 
             // btnHistory
@@ -460,6 +462,20 @@
             this.btnHide.TabIndex = 3;
             this.btnHide.Text = "Ẩn";
             this.btnHide.Click += new System.EventHandler(this.btnHide_Click);
+            // 
+            // btnEmail
+            // 
+            this.btnEmail.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnEmail.Appearance.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnEmail.Appearance.Options.UseFont = true;
+            this.btnEmail.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("simpleButton1.ImageOptions.Image")));
+            this.btnEmail.Location = new System.Drawing.Point(4, 145);
+            this.btnEmail.Name = "btnEmail";
+            this.btnEmail.Size = new System.Drawing.Size(211, 41);
+            this.btnEmail.TabIndex = 3;
+            this.btnEmail.Text = "Email";
+            this.btnEmail.Click += new System.EventHandler(this.btnEmail_Click);
             // 
             // FormMain
             // 
@@ -524,6 +540,7 @@
         private System.Windows.Forms.Label label5;
         private DevExpress.XtraGrid.Columns.GridColumn colTotalDowntime;
         private DevExpress.XtraGrid.Columns.GridColumn colShift;
+        private DevExpress.XtraEditors.SimpleButton btnEmail;
     }
 }
 

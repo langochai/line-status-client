@@ -17,7 +17,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace LineStatusClient.Froms
 {
-    public partial class frmHistory : Form
+    public partial class frmHistory : XtraForm
     {
         public frmHistory()
         {
