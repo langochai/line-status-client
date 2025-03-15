@@ -111,12 +111,16 @@
             this.grvData.GridControl = this.grdData;
             this.grvData.Name = "grvData";
             this.grvData.OptionsBehavior.Editable = false;
+            this.grvData.OptionsFind.AlwaysVisible = true;
+            this.grvData.OptionsFind.ShowFindButton = false;
             this.grvData.OptionsSelection.CheckBoxSelectorColumnWidth = 60;
             this.grvData.OptionsSelection.MultiSelect = true;
             this.grvData.OptionsSelection.MultiSelectMode = DevExpress.XtraGrid.Views.Grid.GridMultiSelectMode.CheckBoxRowSelect;
-            this.grvData.OptionsView.ShowAutoFilterRow = true;
+            this.grvData.OptionsSelection.ShowCheckBoxSelectorInColumnHeader = DevExpress.Utils.DefaultBoolean.True;
             this.grvData.OptionsView.ShowFooter = true;
             this.grvData.OptionsView.ShowGroupPanel = false;
+            this.grvData.SelectionChanged += new DevExpress.Data.SelectionChangedEventHandler(this.grvData_SelectionChanged);
+            this.grvData.ColumnFilterChanged += new System.EventHandler(this.grvData_ColumnFilterChanged);
             // 
             // colLine_c
             // 

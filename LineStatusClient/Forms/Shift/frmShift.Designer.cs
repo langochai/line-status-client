@@ -52,13 +52,13 @@
             this.colLineCode = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colLineName = new DevExpress.XtraGrid.Columns.GridColumn();
             this.WorkShiftID = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colLinShiftID = new DevExpress.XtraGrid.Columns.GridColumn();
             this.repositoryItemComboBox1 = new DevExpress.XtraEditors.Repository.RepositoryItemComboBox();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.btnSelectListLine = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnUnCheckLine = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.colLinShiftID = new DevExpress.XtraGrid.Columns.GridColumn();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grdData)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.grvData)).BeginInit();
@@ -336,11 +336,16 @@
             this.grvLineShift.Name = "grvLineShift";
             this.grvLineShift.OptionsBehavior.Editable = false;
             this.grvLineShift.OptionsFilter.AllowFilterEditor = false;
+            this.grvLineShift.OptionsFind.AlwaysVisible = true;
+            this.grvLineShift.OptionsFind.ShowFindButton = false;
             this.grvLineShift.OptionsSelection.CheckBoxSelectorColumnWidth = 40;
             this.grvLineShift.OptionsSelection.MultiSelect = true;
             this.grvLineShift.OptionsSelection.MultiSelectMode = DevExpress.XtraGrid.Views.Grid.GridMultiSelectMode.CheckBoxRowSelect;
+            this.grvLineShift.OptionsSelection.ShowCheckBoxSelectorInColumnHeader = DevExpress.Utils.DefaultBoolean.True;
             this.grvLineShift.OptionsView.ShowFooter = true;
             this.grvLineShift.OptionsView.ShowGroupPanel = false;
+            this.grvLineShift.SelectionChanged += new DevExpress.Data.SelectionChangedEventHandler(this.grvLineShift_SelectionChanged);
+            this.grvLineShift.ColumnFilterChanged += new System.EventHandler(this.grvLineShift_ColumnFilterChanged);
             this.grvLineShift.CustomUnboundColumnData += new DevExpress.XtraGrid.Views.Base.CustomColumnDataEventHandler(this.grvLineShift_CustomUnboundColumnData);
             // 
             // colSTTLineShift
@@ -386,6 +391,12 @@
             // 
             this.WorkShiftID.FieldName = "WorkShiftID";
             this.WorkShiftID.Name = "WorkShiftID";
+            // 
+            // colLinShiftID
+            // 
+            this.colLinShiftID.Caption = "ID";
+            this.colLinShiftID.FieldName = "ID";
+            this.colLinShiftID.Name = "colLinShiftID";
             // 
             // repositoryItemComboBox1
             // 
@@ -452,12 +463,6 @@
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 64);
-            // 
-            // colLinShiftID
-            // 
-            this.colLinShiftID.Caption = "ID";
-            this.colLinShiftID.FieldName = "ID";
-            this.colLinShiftID.Name = "colLinShiftID";
             // 
             // frmShift
             // 

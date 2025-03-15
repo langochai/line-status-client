@@ -33,10 +33,18 @@ namespace LineStatusClient.Forms.Shift
             {
                 if (workShiftModel.ID > 0)
                 {
+                    //List<Line_mst> ls = SQLHelper<Line_mst>.SqlToList($"SELECT lm.* FROM [Line_mst] lm " +
+                    //    $"LEFT JOIN [LineShift] ls ON lm.[Line_c] = ls.[LineCode] " +
+                    //    $"WHERE ls.[LineCode] IS NULL OR ls.[WorkShiftID] <> {workShiftModel.ID}" +
+                    //    $"order by lm.sort asc");
+
                     List<Line_mst> ls = SQLHelper<Line_mst>.SqlToList($"SELECT lm.* FROM [Line_mst] lm " +
-                        $"LEFT JOIN [LineShift] ls ON lm.[Line_c] = ls.[LineCode] " +
-                        $"WHERE ls.[LineCode] IS NULL OR ls.[WorkShiftID] <> {workShiftModel.ID}" +
-                        $"order by lm.sort asc");
+                        $"LEFT JOIN [LineShift] ls " +
+                        $"ON lm.[Line_c] = ls.[LineCode] " +
+                        $"AND ls.[WorkShiftID] = {workShiftModel.ID}" +
+                        $"WHERE ls.[LineCode] IS NULL " +
+                        $"ORDER BY lm.sort ASC;");
+
                     grdData.DataSource = ls;
                 }
             }
@@ -45,6 +53,12 @@ namespace LineStatusClient.Forms.Shift
                 ErrorLogger.Write(ex);
             }
         }
+
+        private HashSet<object> selectedRows = new HashSet<object>();
+
+
+        
+
 
         private void btnSave_Click(object sender, EventArgs e)
         {
@@ -94,6 +108,49 @@ namespace LineStatusClient.Forms.Shift
         private void frmLineShiftDetail_FormClosed(object sender, FormClosedEventArgs e)
         {
             this.DialogResult = DialogResult.OK;
+        }
+
+        private void grvData_ColumnFilterChanged(object sender, EventArgs e)
+        {
+            RestoreSelectedRows();
+        }
+        private void RestoreSelectedRows()
+        {
+            grvData.BeginUpdate();
+            try
+            {
+                for (int i = 0; i < grvData.RowCount; i++)
+                {
+                    object rowID = grvData.GetRowCellValue(i, "Line_c");
+                    if (rowID != null && selectedRows.Contains(rowID))
+                    {
+                        grvData.SelectRow(i);
+                    }
+                }
+            }
+            finally
+            {
+                grvData.EndUpdate();
+            }
+        }
+
+
+        private void grvData_SelectionChanged(object sender, DevExpress.Data.SelectionChangedEventArgs e)
+        {
+            int rowHandle = e.ControllerRow;
+            if (rowHandle >= 0)
+            {
+                object rowID = grvData.GetRowCellValue(rowHandle, "Line_c"); // Thay "ID" bằng khóa chính của bạn
+
+                if (grvData.IsRowSelected(rowHandle))
+                {
+                    selectedRows.Add(rowID); // Lưu vào danh sách
+                }
+                else
+                {
+                    selectedRows.Remove(rowID); // Xóa khỏi danh sách nếu bỏ chọn
+                }
+            }
         }
     }
 }

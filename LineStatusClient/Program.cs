@@ -21,7 +21,7 @@ namespace LineStatusClient
         {
             if (mutex.WaitOne(TimeSpan.Zero, true))
             {
-                //AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
+                AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);

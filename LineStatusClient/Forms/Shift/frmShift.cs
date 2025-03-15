@@ -88,6 +88,9 @@ namespace LineStatusClient.Forms.Email
             btnEdit_Click(null, null);
         }
 
+        private HashSet<object> selectedRows = new HashSet<object>();
+
+
         #endregion
 
         #region CURD LINE SHIFT
@@ -185,5 +188,54 @@ namespace LineStatusClient.Forms.Email
 
         #endregion
 
+
+        private void RestoreSelectedRows()
+        {
+            grvLineShift.BeginUpdate();
+            try
+            {
+                for (int i = 0; i < grvLineShift.RowCount; i++)
+                {
+                    object rowID = grvLineShift.GetRowCellValue(i, "ID");
+                    if (rowID != null && selectedRows.Contains(rowID))
+                    {
+                        grvLineShift.SelectRow(i);
+                    }
+                }
+            }
+            finally
+            {
+                grvLineShift.EndUpdate();
+            }
+        }
+
+        private void grvLineShift_ColumnFilterChanged(object sender, EventArgs e)
+        {
+            RestoreSelectedRows();
+        }
+
+        private void grvLineShift_SelectionChanged(object sender, DevExpress.Data.SelectionChangedEventArgs e)
+        {
+            try
+            {
+                int rowHandle = e.ControllerRow;
+                if (rowHandle >= 0)
+                {
+                    object rowID = grvLineShift.GetRowCellValue(rowHandle, "ID"); // Thay "ID" bằng khóa chính của bạn
+
+                    if (grvLineShift.IsRowSelected(rowHandle))
+                    {
+                        selectedRows.Add(rowID); // Lưu vào danh sách
+                    }
+                    else
+                    {
+                        selectedRows.Remove(rowID); // Xóa khỏi danh sách nếu bỏ chọn
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
     }
 }
