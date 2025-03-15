@@ -10,6 +10,7 @@ using DocumentFormat.OpenXml.Drawing.Diagrams;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using LineStatusClient.Common;
 using LineStatusClient.DTOs;
+using LineStatusClient.Forms;
 using LineStatusClient.Forms.Email;
 using LineStatusClient.Froms;
 using LineStatusClient.Models;
@@ -36,11 +37,15 @@ namespace LineStatusClient
             InitializeTimer();
         }
 
-        private void FormMain_Shown(object sender, EventArgs e)
+        private async void FormMain_Shown(object sender, EventArgs e)
         {
-            Settings.ReadSQLConnectionString();
-            LoadData();
-            new Thread(SynchData) { IsBackground = true }.Start();
+            Task task1 = Task.Factory.StartNew(() =>
+            {
+                Settings.ReadSQLConnectionString();
+                LoadData();
+                Task.Run(() => ListenToQueue());
+            });
+            await task1;
         }
 
         #region Count running and stopping time
@@ -224,22 +229,8 @@ namespace LineStatusClient
                 {
                     var dateStart = DateTime.Now;
                     var data = SQLHelper<Line_downtime_history_DTO>.ProcedureToList("spGetLineStatus",
-                        //new string[] { "@DateStart", "@DateEnd", "@TextFilter" },
-                        //new object[] { dateStart, dateEnd, textFilter });
                         new string[] { },
                         new object[] { });
-
-                    //foreach (Line_downtime_history_DTO row in data)
-                    //{
-                    //    if (row.WorkDate != null)
-                    //    {
-                    //        DateTime workDate = row.WorkDate;
-                    //        TimeSpan elapsedTime = DateTime.Now - workDate; // Thời gian đã trôi qua từ WorkDate
-
-                    //        row.TotalRunningTime = AddElapsedTime(row.TotalRunningTime, elapsedTime);
-                    //        row.TotalDowntime = AddElapsedTime(row.TotalDowntime, elapsedTime);
-                    //    }
-                    //}
 
                     grdMain.DataSource = data;
                 }));
@@ -250,15 +241,50 @@ namespace LineStatusClient
             }
         }
 
-        private void SynchData()
+        private void ListenToQueue()
         {
-            // Note: Identity of sqldenpendency MUST be unique across all apps, check DB if you're not sure which to use.
-            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(Settings.connectionString);
-            string dbName = builder.InitialCatalog;
-            var dependency = new SqlDependencyEx(Settings.connectionString, dbName, "Line_downtime_history", identity: 2);
-            dependency.TableChanged += (sender, e) => { LoadData(); };
-            dependency.Start();
+            while (true)
+            {
+                try
+                {
+                    using (var connection = new SqlConnection(Settings.connectionString))
+                    {
+                        connection.Open();
+                        using (var command = new SqlCommand("WAITFOR (RECEIVE TOP(1) conversation_handle FROM dbo.DataChangeQueue)", connection))
+                        {
+                            command.CommandTimeout = 60; // Tránh treo vĩnh viễn
+
+                            using (var reader = command.ExecuteReader())
+                            {
+                                if (reader.Read())
+                                {
+                                    string conversationHandle = reader["conversation_handle"].ToString();
+                                    LoadData(); // Gọi hàm cập nhật dữ liệu
+
+                                    // Kết thúc hội thoại để dọn dẹp Queue
+                                    using (var endConvCommand = new SqlCommand("END CONVERSATION @handle", connection))
+                                    {
+                                        endConvCommand.Parameters.AddWithValue("@handle", conversationHandle);
+                                        endConvCommand.ExecuteNonQuery();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (SqlException sqlEx)
+                {
+                    ErrorLogger.SaveLog("SQL Error in ListenToQueue: ", sqlEx.Message);
+                    Thread.Sleep(5000); // Nếu lỗi SQL, chờ 5 giây trước khi thử lại
+                }
+                catch (Exception ex)
+                {
+                    ErrorLogger.SaveLog("Error in ListenToQueue: ", ex.Message);
+                }
+            }
         }
+
+
         #endregion
 
         #region OTHERS
@@ -310,48 +336,29 @@ namespace LineStatusClient
             flyoutPanel1.ShowBeakForm();
         }
 
-        private frmHistory frmHistoryShow = null;
         private void btnHistory_Click(object sender, EventArgs e)
         {
             flyoutPanel1.HideBeakForm();
-            if (frmHistoryShow == null || frmHistoryShow.IsDisposed)
-            {
-                frmHistoryShow = new frmHistory();
-                frmHistoryShow.Show();
-            }
-            else
-            {
-                if (frmHistoryShow.WindowState == FormWindowState.Minimized)
-                    frmHistoryShow.WindowState = FormWindowState.Maximized;
-                frmHistoryShow.TopMost = true;  // Đảm bảo form hiển thị trên cùng
-                frmHistoryShow.TopMost = false; // Trả về trạng thái bình thường
-                frmHistoryShow.BringToFront();
-                frmHistoryShow.Activate();
-            }
+            frmHistory frm = new frmHistory();
+            frm.ShowDialog();
         }
 
-        private frmEmail frmEmailShow = null;
         private void btnEmail_Click(object sender, EventArgs e)
         {
             flyoutPanel1.HideBeakForm();
-            if (frmEmailShow == null || frmEmailShow.IsDisposed)
-            {
-                frmEmailShow = new frmEmail();
-                frmEmailShow.Show();
-            }
-            else
-            {
-                if (frmEmailShow.WindowState == FormWindowState.Minimized)
-                    frmEmailShow.WindowState = FormWindowState.Maximized;
-                frmEmailShow.TopMost = true;
-                frmEmailShow.TopMost = false;
-                frmEmailShow.BringToFront();
-                frmEmailShow.Activate();
-            }
+            frmEmail frm = new frmEmail();
+            frm.ShowDialog();
         }
 
+        private void btnShift_Click(object sender, EventArgs e)
+        {
+            flyoutPanel1.HideBeakForm();
+            frmEnterPassword frmPass = new frmEnterPassword();
+            if (frmPass.ShowDialog() != DialogResult.OK) return;
+
+            frmShift frm = new frmShift();
+            frm.ShowDialog();
+        }
         #endregion
-
-
     }
 }

@@ -14,6 +14,7 @@ using System.IO;
 using ClosedXML.Excel;
 using LineStatusClient.DTOs;
 using DocumentFormat.OpenXml.Spreadsheet;
+using DevExpress.Internal.WinApi.Windows.UI.Notifications;
 
 namespace LineStatusClient.Froms
 {
@@ -57,8 +58,9 @@ namespace LineStatusClient.Froms
                 string strDateStart = dateStart.ToString("yyyy-MM-dd HH:mm:ss");
                 string strDateEnd = dateEnd.ToString("yyyy-MM-dd HH:mm:ss");
 
-                var lineCode = SQLUtilities.ToString(cb_Line.EditValue);
-                var shift = SQLUtilities.ToInt(cb_Shift.SelectedIndex) + 1;
+                string lineCode = SQLUtilities.ToString(cb_Line.EditValue);
+                int shift = SQLUtilities.ToInt(cb_Shift.EditValue);
+                if (shift <= 0 || lineCode == "") return;
 
                 var allLineStatus = SQLHelper<Line_downtime_history_DTO>.ProcedureToList("spGetLineStatusChangeTime",
                 new string[] { "@DateStart", "@DateEnd", "@LineCode", "@Shift" },
@@ -67,6 +69,34 @@ namespace LineStatusClient.Froms
             }
             catch (Exception)
             {
+            }
+        }
+
+        private void loadWorkShift()
+        {
+            try
+            {
+                string lineCode = cb_Line.EditValue.ToString().Trim();
+                if (lineCode == "") return;
+
+                List<LineShiftDT0_W> list_LineShift = SQLHelper<LineShiftDT0_W>.SqlToList($"select ls.*, ws.ShiftCode, ws.ShiftName, ws.StartTime, ws.EndTime from [LineShift] ls " +
+                    $"inner join WorkShift ws on ws.ID = ls.WorkShiftID " +
+                    $"where ls.LineCode = {lineCode}").ToList();
+
+                if (list_LineShift.Count == 0)
+                {
+                    MessageBox.Show($"Không tìm thấy ca làm việc của chuyền [{lineCode}]!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                cb_Shift.Properties.DataSource = list_LineShift;
+                cb_Shift.Properties.DisplayMember = "ShiftName";
+                cb_Shift.Properties.ValueMember = "ShiftCode";
+                cb_Shift.EditValue = "";
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.SaveLog("cb_Line_EditValueChanged", ex.Message);
             }
         }
         #endregion
@@ -90,84 +120,100 @@ namespace LineStatusClient.Froms
 
         private void btnExportExcel_Click(object sender, EventArgs e)
         {
-            List<Line_downtime_history_DTO> listLineStatus = (List<Line_downtime_history_DTO>)grdData.DataSource;
-            if (listLineStatus.Count <= 0) return;
+            List<Line_downtime_history_DTO> data = (List<Line_downtime_history_DTO>)grdData.DataSource;
+            if (data.Count <= 0) return;
             var dateTime = Convert.ToDateTime(dtpDateTime.EditValue).Date;
-            int shift = cb_Shift.SelectedIndex + 1;
+            int shift = SQLUtilities.ToInt(cb_Shift.EditValue);
             var savePath = OpenSaveFileForm($"Lịch sử trạng thái dây chuyền {cb_Line.Text}_{dateTime.ToString("ddMMyyyy")}");
             if (string.IsNullOrEmpty(savePath)) return;
             Task.Run(() =>
             {
                 try
                 {
+                    var groupedProductData = data
+                        .Select((item, index) => new { Item = item, Index = index }) // Thêm chỉ mục để theo dõi vị trí
+                        .Where((x, i) => i == 0 || x.Item.status != data[i - 1].status) // Chỉ giữ dòng đầu mỗi nhóm liên tiếp
+                        .Select(x => x.Item) // Lấy lại đối tượng gốc
+                        .ToList();
+
                     btnExportExcel.BeginInvoke(new Action(() => { btnExportExcel.Enabled = false; }));
-                    var data = listLineStatus
-                        .GroupBy(d => new { d.line_code, d.timestamp.Date })
-                        .Select(d => new
-                        {
-                            d.Key.line_code,
-                            d.Key.Date,
-                            Items = d.ToList()
-                        }).ToList();
                     string excelFilename = $"template.xlsx";
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "refs\\" + excelFilename);
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "" + excelFilename);
                     using (var workbook = new XLWorkbook(filePath))
                     {
                         var template = workbook.Worksheet(1);
                         using (var newWorkbook = new XLWorkbook())
                         {
-                            for (var i = 0; i <= data.Count - 1; i++)
+                            var newSheet = template.CopyTo(newWorkbook, "1");
+                            newSheet.Cell(1, 1).Value = $"Bảng quản lý sản xuất dây chuyền: {data[0].line_code}   ngày: {dateTime.Date}";
+
+                            /// tính theo status
+                            int col = 2;
+                            foreach (var result in groupedProductData)
                             {
-                                var newSheet = template.CopyTo(newWorkbook, i.ToString());
-                                //newSheet.Cell(1, 1).Value = $"Bảng quản lý sản xuất dây chuyền: {data[i].line_code}   ngày: {data[i].Date}";
-
-                                int col = 2;
-                                foreach (var result in data[i].Items)
+                                newSheet.Cell(3, col).Value = result.timestamp.ToString("HH:mm:ss");
+                                switch (result.status)
                                 {
-                                    newSheet.Cell(1, 1).Value = $"Bảng quản lý sản xuất dây chuyền: {result.line_nm}   ngày: {data[i].Date}";
-                                    newSheet.Cell(3, col).Value = result.timestamp.ToString("HH:mm:ss");
-                                    switch (result.status)
-                                    {
-                                        case 0:
-                                            newSheet.Cell(2, col).Value = "Không chạy";
-                                            newSheet.Cell(2, col).Style.Font.FontColor = XLColor.WhiteSmoke;
-                                            newSheet.Cell(2, col).Style.Fill.BackgroundColor = XLColor.WhiteSmoke;
-                                            break;
-                                        case 1:
-                                            newSheet.Cell(2, col).Value = "Chạy";
-                                            newSheet.Cell(2, col).Style.Font.FontColor = XLColor.Green;
-                                            newSheet.Cell(2, col).Style.Fill.BackgroundColor = XLColor.Green;
-                                            break;
-                                        case 2:
-                                            newSheet.Cell(2, col).Value = "Nghỉ trưa";
-                                            newSheet.Cell(2, col).Style.Font.FontColor = XLColor.Yellow;
-                                            newSheet.Cell(2, col).Style.Fill.BackgroundColor = XLColor.Yellow;
-                                            break;
-                                        case 3:
-                                            newSheet.Cell(2, col).Value = "Dừng";
-                                            newSheet.Cell(2, col).Style.Font.FontColor = XLColor.OrangeRed;
-                                            newSheet.Cell(2, col).Style.Fill.BackgroundColor = XLColor.OrangeRed;
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                    col += 1;
+                                    case 0:
+                                        newSheet.Cell(2, col).Value = "Không chạy";
+                                        newSheet.Cell(2, col).Style.Font.FontColor = XLColor.WhiteSmoke;
+                                        newSheet.Cell(2, col).Style.Fill.BackgroundColor = XLColor.WhiteSmoke;
+                                        break;
+                                    case 1:
+                                        newSheet.Cell(2, col).Value = "Chạy";
+                                        newSheet.Cell(2, col).Style.Font.FontColor = XLColor.Green;
+                                        newSheet.Cell(2, col).Style.Fill.BackgroundColor = XLColor.Green;
+                                        break;
+                                    case 2:
+                                        newSheet.Cell(2, col).Value = "Nghỉ trưa";
+                                        newSheet.Cell(2, col).Style.Font.FontColor = XLColor.Yellow;
+                                        newSheet.Cell(2, col).Style.Fill.BackgroundColor = XLColor.Yellow;
+                                        break;
+                                    case 3:
+                                        newSheet.Cell(2, col).Value = "Dừng";
+                                        newSheet.Cell(2, col).Style.Font.FontColor = XLColor.OrangeRed;
+                                        newSheet.Cell(2, col).Style.Fill.BackgroundColor = XLColor.OrangeRed;
+                                        break;
+                                    default:
+                                        break;
                                 }
+                                col += 1;
+                            }
+                            // tính theo product_count
+                            int rowStart = 8;
+                            foreach (var result in data)
+                            {
+                                newSheet.Cell(rowStart, 1).Value = result.timestamp.ToString("HH:mm:ss");
+                                newSheet.Cell(rowStart, 2).Value = result.product_count;
+                                rowStart += 1;
+                            }
 
-                                //var query = $@"
-                                //        select * from Line_downtime_history
-                                //        where [timestamp] between '{dateStart:yyyy-MM-dd HH:mm:ss:fff}' and '{dateEnd:yyyy-MM-dd HH:mm:ss:fff}'
-                                //        and line_code = '{data[i].line_code}'
-                                //        and shift = {shift}";
-                                //var productList = SQLHelper<Line_downtime_history>.SqlToList(query);
-                                int row = 8;
-                                foreach (var item in listLineStatus)
+                            // tính tổng Thời gian dừng, chạy
+                            // Sắp xếp dữ liệu theo timestamp
+                            data = data.OrderBy(d => d.timestamp).ToList();
+                            TimeSpan totalRunTime = TimeSpan.Zero;
+                            TimeSpan totalDowntime = TimeSpan.Zero;
+                            for (int i = 0; i < data.Count - 1; i++)
+                            {
+                                var current = data[i];
+                                var next = data[i + 1];
+
+                                TimeSpan duration = next.timestamp - current.timestamp;
+
+                                if (current.status == 1)  // Thời gian chạy
                                 {
-                                    newSheet.Cell(row, 1).Value = item.timestamp.ToString("yyyy/MM/dd HH:mm:ss");
-                                    newSheet.Cell(row, 2).Value = item.product_count;
-                                    row++;
+                                    totalRunTime += duration;
+                                }
+                                else if (current.status == 3) // Thời gian dừng
+                                {
+                                    totalDowntime += duration;
                                 }
                             }
+                            string formattedRunTime = $"{(int)totalRunTime.TotalHours:D2}:{totalRunTime.Minutes:D2}:{totalRunTime.Seconds:D2}";
+                            string formattedDowntime = $"{(int)totalDowntime.TotalHours:D2}:{totalDowntime.Minutes:D2}:{totalDowntime.Seconds:D2}";
+                            newSheet.Cell(8, 6).Value = formattedRunTime;
+                            newSheet.Cell(8, 7).Value = formattedDowntime;
+
                             newWorkbook.SaveAs(savePath);
                         }
                     };
@@ -196,10 +242,10 @@ namespace LineStatusClient.Froms
 
         private void cb_Line_EditValueChanged(object sender, EventArgs e)
         {
-            loadData();
+            loadWorkShift();
         }
 
-        private void cb_Shift_SelectedIndexChanged(object sender, EventArgs e)
+        private void cb_Shift_EditValueChanged(object sender, EventArgs e)
         {
             loadData();
         }
@@ -211,11 +257,11 @@ namespace LineStatusClient.Froms
                 e.Value = grvData.GetRowHandle(e.ListSourceRowIndex) + 1;
             }
         }
+        #endregion
 
-        private void dtpDateTime_EditValueChanged(object sender, EventArgs e)
+        private void btnFind_Click(object sender, EventArgs e)
         {
             loadData();
         }
-        #endregion
     }
 }

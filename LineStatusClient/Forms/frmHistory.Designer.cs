@@ -31,7 +31,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmHistory));
             this.panl_Header = new DevExpress.XtraEditors.PanelControl();
             this.btnExportExcel = new DevExpress.XtraEditors.SimpleButton();
-            this.cb_Shift = new System.Windows.Forms.ComboBox();
+            this.cb_Shift = new DevExpress.XtraEditors.SearchLookUpEdit();
+            this.grvWorkShift = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.colWorkShiftID = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colShiftCode = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colShiftName = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colStartTime = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colEndTime = new DevExpress.XtraGrid.Columns.GridColumn();
             this.cb_Line = new DevExpress.XtraEditors.SearchLookUpEdit();
             this.grvCb_Line = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.colLineCode = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -49,8 +55,11 @@
             this.coltimestamp = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colstatus_text = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colproduct_count = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.btnFind = new DevExpress.XtraEditors.SimpleButton();
             ((System.ComponentModel.ISupportInitialize)(this.panl_Header)).BeginInit();
             this.panl_Header.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.cb_Shift.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.grvWorkShift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cb_Line.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.grvCb_Line)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtpDateTime.Properties)).BeginInit();
@@ -64,6 +73,7 @@
             this.panl_Header.Appearance.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.panl_Header.Appearance.Options.UseBackColor = true;
             this.panl_Header.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
+            this.panl_Header.Controls.Add(this.btnFind);
             this.panl_Header.Controls.Add(this.btnExportExcel);
             this.panl_Header.Controls.Add(this.cb_Shift);
             this.panl_Header.Controls.Add(this.cb_Line);
@@ -74,7 +84,7 @@
             this.panl_Header.Dock = System.Windows.Forms.DockStyle.Top;
             this.panl_Header.Location = new System.Drawing.Point(0, 0);
             this.panl_Header.Name = "panl_Header";
-            this.panl_Header.Size = new System.Drawing.Size(1013, 52);
+            this.panl_Header.Size = new System.Drawing.Size(1276, 52);
             this.panl_Header.TabIndex = 0;
             // 
             // btnExportExcel
@@ -83,7 +93,7 @@
             this.btnExportExcel.Appearance.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.btnExportExcel.Appearance.Options.UseFont = true;
             this.btnExportExcel.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("btnExportExcel.ImageOptions.Image")));
-            this.btnExportExcel.Location = new System.Drawing.Point(869, 6);
+            this.btnExportExcel.Location = new System.Drawing.Point(1132, 6);
             this.btnExportExcel.Name = "btnExportExcel";
             this.btnExportExcel.Size = new System.Drawing.Size(136, 40);
             this.btnExportExcel.TabIndex = 4;
@@ -92,17 +102,86 @@
             // 
             // cb_Shift
             // 
-            this.cb_Shift.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cb_Shift.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.cb_Shift.FormattingEnabled = true;
-            this.cb_Shift.Items.AddRange(new object[] {
-            "Ngày",
-            "Đêm"});
-            this.cb_Shift.Location = new System.Drawing.Point(568, 12);
+            this.cb_Shift.Location = new System.Drawing.Point(570, 14);
             this.cb_Shift.Name = "cb_Shift";
-            this.cb_Shift.Size = new System.Drawing.Size(121, 28);
-            this.cb_Shift.TabIndex = 3;
-            this.cb_Shift.SelectedIndexChanged += new System.EventHandler(this.cb_Shift_SelectedIndexChanged);
+            this.cb_Shift.Properties.Appearance.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.cb_Shift.Properties.Appearance.Options.UseFont = true;
+            this.cb_Shift.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.cb_Shift.Properties.NullText = "";
+            this.cb_Shift.Properties.PopupView = this.grvWorkShift;
+            this.cb_Shift.Size = new System.Drawing.Size(213, 26);
+            this.cb_Shift.TabIndex = 2;
+            this.cb_Shift.EditValueChanged += new System.EventHandler(this.cb_Shift_EditValueChanged);
+            // 
+            // grvWorkShift
+            // 
+            this.grvWorkShift.Appearance.HeaderPanel.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
+            this.grvWorkShift.Appearance.HeaderPanel.ForeColor = System.Drawing.Color.Black;
+            this.grvWorkShift.Appearance.HeaderPanel.Options.UseFont = true;
+            this.grvWorkShift.Appearance.HeaderPanel.Options.UseForeColor = true;
+            this.grvWorkShift.Appearance.HeaderPanel.Options.UseTextOptions = true;
+            this.grvWorkShift.Appearance.HeaderPanel.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.grvWorkShift.Appearance.HeaderPanel.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
+            this.grvWorkShift.Appearance.Row.Font = new System.Drawing.Font("Tahoma", 12F);
+            this.grvWorkShift.Appearance.Row.Options.UseFont = true;
+            this.grvWorkShift.Appearance.Row.Options.UseTextOptions = true;
+            this.grvWorkShift.Appearance.Row.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.grvWorkShift.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
+            this.colWorkShiftID,
+            this.colShiftCode,
+            this.colShiftName,
+            this.colStartTime,
+            this.colEndTime});
+            this.grvWorkShift.FocusRectStyle = DevExpress.XtraGrid.Views.Grid.DrawFocusRectStyle.RowFocus;
+            this.grvWorkShift.Name = "grvWorkShift";
+            this.grvWorkShift.OptionsSelection.EnableAppearanceFocusedCell = false;
+            this.grvWorkShift.OptionsView.ShowGroupPanel = false;
+            // 
+            // colWorkShiftID
+            // 
+            this.colWorkShiftID.Caption = "ID";
+            this.colWorkShiftID.FieldName = "ID";
+            this.colWorkShiftID.Name = "colWorkShiftID";
+            this.colWorkShiftID.Width = 566;
+            // 
+            // colShiftCode
+            // 
+            this.colShiftCode.Caption = "Mã ca";
+            this.colShiftCode.FieldName = "ShiftCode";
+            this.colShiftCode.Name = "colShiftCode";
+            this.colShiftCode.Visible = true;
+            this.colShiftCode.VisibleIndex = 0;
+            this.colShiftCode.Width = 203;
+            // 
+            // colShiftName
+            // 
+            this.colShiftName.Caption = "Tên ca";
+            this.colShiftName.FieldName = "ShiftName";
+            this.colShiftName.Name = "colShiftName";
+            this.colShiftName.Visible = true;
+            this.colShiftName.VisibleIndex = 1;
+            this.colShiftName.Width = 428;
+            // 
+            // colStartTime
+            // 
+            this.colStartTime.Caption = "Bắt đầu";
+            this.colStartTime.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Custom;
+            this.colStartTime.FieldName = "StartTime";
+            this.colStartTime.Name = "colStartTime";
+            this.colStartTime.Visible = true;
+            this.colStartTime.VisibleIndex = 2;
+            this.colStartTime.Width = 483;
+            // 
+            // colEndTime
+            // 
+            this.colEndTime.Caption = "Kết thúc";
+            this.colEndTime.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Custom;
+            this.colEndTime.FieldName = "EndTime";
+            this.colEndTime.Name = "colEndTime";
+            this.colEndTime.Visible = true;
+            this.colEndTime.VisibleIndex = 3;
+            this.colEndTime.Width = 501;
             // 
             // cb_Line
             // 
@@ -211,15 +290,15 @@
             this.dtpDateTime.Properties.UseMaskAsDisplayFormat = true;
             this.dtpDateTime.Size = new System.Drawing.Size(104, 26);
             this.dtpDateTime.TabIndex = 0;
-            this.dtpDateTime.EditValueChanged += new System.EventHandler(this.dtpDateTime_EditValueChanged);
             // 
             // grdData
             // 
             this.grdData.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grdData.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(1, 1, 1, 1);
             this.grdData.Location = new System.Drawing.Point(0, 52);
             this.grdData.MainView = this.grvData;
             this.grdData.Name = "grdData";
-            this.grdData.Size = new System.Drawing.Size(1013, 459);
+            this.grdData.Size = new System.Drawing.Size(1276, 554);
             this.grdData.TabIndex = 2;
             this.grdData.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.grvData});
@@ -337,15 +416,27 @@
             this.colproduct_count.VisibleIndex = 4;
             this.colproduct_count.Width = 178;
             // 
+            // btnFind
+            // 
+            this.btnFind.Appearance.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.btnFind.Appearance.Options.UseFont = true;
+            this.btnFind.Location = new System.Drawing.Point(827, 12);
+            this.btnFind.Name = "btnFind";
+            this.btnFind.Size = new System.Drawing.Size(88, 30);
+            this.btnFind.TabIndex = 5;
+            this.btnFind.Text = "Tìm kiếm";
+            this.btnFind.Click += new System.EventHandler(this.btnFind_Click);
+            // 
             // frmHistory
             // 
+            this.Appearance.Options.UseFont = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1013, 511);
+            this.ClientSize = new System.Drawing.Size(1276, 606);
             this.Controls.Add(this.grdData);
             this.Controls.Add(this.panl_Header);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.IconOptions.Icon = ((System.Drawing.Icon)(resources.GetObject("frmHistory.IconOptions.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "frmHistory";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -355,6 +446,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.panl_Header)).EndInit();
             this.panl_Header.ResumeLayout(false);
             this.panl_Header.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.cb_Shift.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.grvWorkShift)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cb_Line.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.grvCb_Line)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtpDateTime.Properties.CalendarTimeProperties)).EndInit();
@@ -370,7 +463,6 @@
         private DevExpress.XtraEditors.PanelControl panl_Header;
         private System.Windows.Forms.Label label1;
         private DevExpress.XtraEditors.DateEdit dtpDateTime;
-        private System.Windows.Forms.ComboBox cb_Shift;
         private DevExpress.XtraEditors.SearchLookUpEdit cb_Line;
         private DevExpress.XtraGrid.Views.Grid.GridView grvCb_Line;
         private System.Windows.Forms.Label label3;
@@ -387,5 +479,13 @@
         private DevExpress.XtraGrid.Columns.GridColumn coltimestamp;
         private DevExpress.XtraGrid.Columns.GridColumn colstatus_text;
         private DevExpress.XtraGrid.Columns.GridColumn colproduct_count;
+        private DevExpress.XtraEditors.SearchLookUpEdit cb_Shift;
+        private DevExpress.XtraGrid.Views.Grid.GridView grvWorkShift;
+        private DevExpress.XtraGrid.Columns.GridColumn colWorkShiftID;
+        private DevExpress.XtraGrid.Columns.GridColumn colShiftCode;
+        private DevExpress.XtraGrid.Columns.GridColumn colShiftName;
+        private DevExpress.XtraGrid.Columns.GridColumn colStartTime;
+        private DevExpress.XtraGrid.Columns.GridColumn colEndTime;
+        private DevExpress.XtraEditors.SimpleButton btnFind;
     }
 }

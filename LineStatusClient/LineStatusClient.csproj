@@ -195,7 +195,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\DataReaderExtension.cs" />
+    <Compile Include="Common\DBUtils.cs" />
     <Compile Include="Common\ErrorLogger.cs" />
+    <Compile Include="Common\Expression.cs" />
     <Compile Include="Common\Settings.cs" />
     <Compile Include="Common\SqlDependencyEx.cs" />
     <Compile Include="Common\SQLHelper.cs" />
@@ -232,9 +234,29 @@
     <Compile Include="Forms\frmHistory.Designer.cs">
       <DependentUpon>frmHistory.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Shift\frmLineShiftDetail.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Shift\frmLineShiftDetail.Designer.cs">
+      <DependentUpon>frmLineShiftDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Shift\frmShiftDetail.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Shift\frmShiftDetail.Designer.cs">
+      <DependentUpon>frmShiftDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Shift\frmShift.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Shift\frmShift.Designer.cs">
+      <DependentUpon>frmShift.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\LineEmailConfig.cs" />
+    <Compile Include="Models\LineShift.cs" />
     <Compile Include="Models\Line_downtime_history.cs" />
     <Compile Include="Models\Line_mst.cs" />
+    <Compile Include="Models\WorkShift.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FormMain.resx">
@@ -251,6 +273,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmHistory.resx">
       <DependentUpon>frmHistory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Shift\frmLineShiftDetail.resx">
+      <DependentUpon>frmLineShiftDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Shift\frmShiftDetail.resx">
+      <DependentUpon>frmShiftDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Shift\frmShift.resx">
+      <DependentUpon>frmShift.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -283,6 +314,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="line.ico" />
+    <None Include="Resources\select32.png" />
+    <None Include="Resources\deleteview32.png" />
     <None Include="Resources\line.png" />
   </ItemGroup>
   <ItemGroup />

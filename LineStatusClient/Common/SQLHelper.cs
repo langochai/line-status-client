@@ -152,6 +152,35 @@ namespace LineStatusClient.Common
                 conn.Close();
             }
         }
+        public static void DeleteByAttribute(string name, Int64 value)
+        {
+            T model = new T();
+            Type type = model.GetType();
+            string tableName = type.Name.StartsWith("Model") ? type.Name : type.Name.Replace("Model", "");
+            string sql = DBUtils.SQLDelete(tableName, name, value);
+            ExcuteNonQuerySQL(sql);
+        }
+
+        public static int ExcuteNonQuerySQL(string sql)
+        {
+            SqlConnection conn = new SqlConnection(connectionString);
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandTimeout = 6000;
+            try
+            {
+                cmd.Connection.Open();
+                return cmd.ExecuteNonQuery();
+            }
+            catch (SqlException se)
+            {
+                throw;
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
 
         public static T FindByID(Int64 id)
         {
@@ -178,6 +207,66 @@ namespace LineStatusClient.Common
                 conn.Close();
             }
             return model;
+        }
+
+        public static List<T> FindByAttribute(string fieldName, object fieldValue)
+        {
+            SqlConnection conn = new SqlConnection(connectionString);
+            List<T> lst = new List<T>();
+            T model = new T();
+            Type type = model.GetType();
+            string tableName = type.Name.StartsWith("Model") ? type.Name : type.Name.Replace("Model", "");
+            try
+            {
+                string sql = DBUtils.SQLSelect(tableName, fieldName, fieldValue);
+                //string sql = $"SELECT * FROM {tableName} with (nolock)  WHERE {fieldName} = {fieldValue}";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.CommandTimeout = Timeout;
+                cmd.CommandType = CommandType.Text;
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                lst = reader.MapToList<T>();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.ToString());
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return lst;
+        }
+
+        public static List<T> FindByExpression(Expression exp)
+        {
+            SqlConnection conn = new SqlConnection(connectionString);
+            List<T> lst = new List<T>();
+            T model = new T();
+            Type type = model.GetType();
+            string tableName = type.Name.StartsWith("Model") ? type.Name : type.Name.Replace("Model", "");
+            try
+            {
+                string sql = DBUtils.SQLSelect(tableName, exp);
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                ////cmd.CommandTimeout = Timeout;
+                cmd.CommandType = CommandType.Text;
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                lst = reader.MapToList<T>();
+                reader.Close();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return lst;
         }
 
         public static List<T> FindAll()

@@ -141,6 +141,86 @@ namespace LineStatusClient.Common
             }
         }
 
+        public static string DateTimeOffsetToTimeString(object input)
+        {
+            try
+            {
+                if (input is DateTimeOffset dto)
+                    return dto.ToString("HH:mm:ss");
+
+                if (input is DateTime dt)
+                    return dt.ToString("HH:mm:ss");
+
+                if (input is string str)
+                {
+                    if (DateTimeOffset.TryParse(str, out var parsedDto))
+                        return parsedDto.ToString("HH:mm:ss");
+
+                    if (DateTime.TryParse(str, out var parsedDt))
+                        return parsedDt.ToString("HH:mm:ss");
+                }
+
+                if (input is long ticks)
+                {
+                    var dateTime = new DateTimeOffset(ticks, TimeSpan.Zero);
+                    return dateTime.ToString("HH:mm:ss");
+                }
+            }
+            catch
+            {
+                return null;
+            }
+            return null;
+        }
+
+
+
+        public static DateTimeOffset? ToDateTimeOffset(object input, TimeSpan? defaultOffset = null)
+        {
+            try
+            {
+                if (input == null)
+                    return null;
+
+                if (input is DateTimeOffset dto)
+                    return dto;
+
+                if (input is DateTime dt)
+                    return new DateTimeOffset(dt, defaultOffset ?? TimeSpan.Zero);
+
+                if (input is TimeSpan time)
+                    return new DateTimeOffset(DateTime.Today.Add(time), defaultOffset ?? TimeSpan.Zero);
+
+                if (input is long ticks)
+                    return new DateTimeOffset(ticks, defaultOffset ?? TimeSpan.Zero);
+
+                if (input is string str)
+                {
+                    // Thử parse theo DateTimeOffset
+                    if (DateTimeOffset.TryParse(str, out DateTimeOffset parsedDto))
+                        return parsedDto;
+
+                    // Thử parse theo DateTime
+                    if (DateTime.TryParse(str, out DateTime parsedDt))
+                        return new DateTimeOffset(parsedDt, defaultOffset ?? TimeSpan.Zero);
+
+                    // Trường hợp chuỗi chỉ chứa "HH:mm:ss"
+                    if (TimeSpan.TryParse(str, out TimeSpan parsedTime))
+                        return new DateTimeOffset(DateTime.Today.Add(parsedTime), defaultOffset ?? TimeSpan.Zero);
+                }
+            }
+            catch (Exception)
+            {
+                return null; // Trả về null nếu không thể ép kiểu
+            }
+            return null;
+        }
+
+
+
+
+
+
         /// <summary>
         /// Convert DataTable to List object
         /// </summary>

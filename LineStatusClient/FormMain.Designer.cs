@@ -57,10 +57,11 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.btnSetting = new DevExpress.XtraEditors.SimpleButton();
             this.flyoutPanel1 = new DevExpress.Utils.FlyoutPanel();
+            this.btnShift = new DevExpress.XtraEditors.SimpleButton();
+            this.btnEmail = new DevExpress.XtraEditors.SimpleButton();
             this.btnHistory = new DevExpress.XtraEditors.SimpleButton();
             this.btnRunAtStartup = new DevExpress.XtraEditors.SimpleButton();
             this.btnHide = new DevExpress.XtraEditors.SimpleButton();
-            this.btnEmail = new DevExpress.XtraEditors.SimpleButton();
             ((System.ComponentModel.ISupportInitialize)(this.pnlHeader)).BeginInit();
             this.pnlHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grdMain)).BeginInit();
@@ -81,7 +82,7 @@
             this.pnlHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlHeader.Location = new System.Drawing.Point(0, 0);
             this.pnlHeader.Name = "pnlHeader";
-            this.pnlHeader.Size = new System.Drawing.Size(1198, 60);
+            this.pnlHeader.Size = new System.Drawing.Size(1430, 60);
             this.pnlHeader.TabIndex = 0;
             // 
             // label5
@@ -91,7 +92,7 @@
             this.label5.ForeColor = System.Drawing.Color.Black;
             this.label5.Location = new System.Drawing.Point(0, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(1198, 60);
+            this.label5.Size = new System.Drawing.Size(1430, 60);
             this.label5.TabIndex = 0;
             this.label5.Text = "HỆ THÔNG QUẢN LÝ DÂY CHUYỀN (SEB)";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -102,7 +103,7 @@
             this.grdMain.Location = new System.Drawing.Point(0, 60);
             this.grdMain.MainView = this.grvMain;
             this.grdMain.Name = "grdMain";
-            this.grdMain.Size = new System.Drawing.Size(1198, 513);
+            this.grdMain.Size = new System.Drawing.Size(1430, 575);
             this.grdMain.TabIndex = 1;
             this.grdMain.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.grvMain});
@@ -110,7 +111,7 @@
             // grvMain
             // 
             this.grvMain.Appearance.HeaderPanel.BackColor = System.Drawing.Color.Transparent;
-            this.grvMain.Appearance.HeaderPanel.Font = new System.Drawing.Font("Tahoma", 14.25F);
+            this.grvMain.Appearance.HeaderPanel.Font = new System.Drawing.Font("Tahoma", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.grvMain.Appearance.HeaderPanel.Options.UseBackColor = true;
             this.grvMain.Appearance.HeaderPanel.Options.UseBorderColor = true;
             this.grvMain.Appearance.HeaderPanel.Options.UseFont = true;
@@ -118,7 +119,8 @@
             this.grvMain.Appearance.HeaderPanel.Options.UseTextOptions = true;
             this.grvMain.Appearance.HeaderPanel.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
             this.grvMain.Appearance.HeaderPanel.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
-            this.grvMain.Appearance.Row.Font = new System.Drawing.Font("Tahoma", 12F);
+            this.grvMain.Appearance.HeaderPanel.TextOptions.WordWrap = DevExpress.Utils.WordWrap.Wrap;
+            this.grvMain.Appearance.Row.Font = new System.Drawing.Font("Tahoma", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.grvMain.Appearance.Row.Options.UseFont = true;
             this.grvMain.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.colNo,
@@ -147,8 +149,8 @@
             this.colNo.DisplayFormat.FormatString = "n0";
             this.colNo.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
             this.colNo.FieldName = "No";
-            this.colNo.MaxWidth = 44;
-            this.colNo.MinWidth = 44;
+            this.colNo.MaxWidth = 60;
+            this.colNo.MinWidth = 60;
             this.colNo.Name = "colNo";
             this.colNo.OptionsColumn.AllowEdit = false;
             this.colNo.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.False;
@@ -157,7 +159,7 @@
             this.colNo.UnboundDataType = typeof(int);
             this.colNo.Visible = true;
             this.colNo.VisibleIndex = 0;
-            this.colNo.Width = 44;
+            this.colNo.Width = 60;
             // 
             // colLinecode
             // 
@@ -291,9 +293,9 @@
             this.pnlFooter.Controls.Add(this.textBox1);
             this.pnlFooter.Controls.Add(this.btnSetting);
             this.pnlFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlFooter.Location = new System.Drawing.Point(0, 573);
+            this.pnlFooter.Location = new System.Drawing.Point(0, 635);
             this.pnlFooter.Name = "pnlFooter";
-            this.pnlFooter.Size = new System.Drawing.Size(1198, 45);
+            this.pnlFooter.Size = new System.Drawing.Size(1430, 45);
             this.pnlFooter.TabIndex = 2;
             // 
             // label4
@@ -301,7 +303,7 @@
             this.label4.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(1131, 13);
+            this.label4.Location = new System.Drawing.Point(1363, 13);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(52, 20);
             this.label4.TabIndex = 2;
@@ -312,7 +314,7 @@
             this.textBox4.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.textBox4.BackColor = System.Drawing.Color.OrangeRed;
             this.textBox4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBox4.Location = new System.Drawing.Point(1092, 8);
+            this.textBox4.Location = new System.Drawing.Point(1324, 8);
             this.textBox4.Multiline = true;
             this.textBox4.Name = "textBox4";
             this.textBox4.ReadOnly = true;
@@ -324,18 +326,18 @@
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
-            this.label3.Location = new System.Drawing.Point(987, 13);
+            this.label3.Location = new System.Drawing.Point(1257, 13);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(82, 20);
+            this.label3.Size = new System.Drawing.Size(45, 20);
             this.label3.TabIndex = 2;
-            this.label3.Text = "Nghỉ trưa";
+            this.label3.Text = "Nghỉ";
             // 
             // textBox3
             // 
             this.textBox3.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.textBox3.BackColor = System.Drawing.Color.Yellow;
             this.textBox3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBox3.Location = new System.Drawing.Point(948, 8);
+            this.textBox3.Location = new System.Drawing.Point(1218, 8);
             this.textBox3.Multiline = true;
             this.textBox3.Name = "textBox3";
             this.textBox3.ReadOnly = true;
@@ -347,7 +349,7 @@
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
-            this.label2.Location = new System.Drawing.Point(875, 13);
+            this.label2.Location = new System.Drawing.Point(1145, 13);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(49, 20);
             this.label2.TabIndex = 2;
@@ -358,7 +360,7 @@
             this.textBox2.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.textBox2.BackColor = System.Drawing.Color.SpringGreen;
             this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBox2.Location = new System.Drawing.Point(836, 8);
+            this.textBox2.Location = new System.Drawing.Point(1106, 8);
             this.textBox2.Multiline = true;
             this.textBox2.Name = "textBox2";
             this.textBox2.ReadOnly = true;
@@ -370,7 +372,7 @@
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(664, 13);
+            this.label1.Location = new System.Drawing.Point(934, 13);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(146, 20);
             this.label1.TabIndex = 2;
@@ -381,7 +383,7 @@
             this.textBox1.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.textBox1.BackColor = System.Drawing.Color.White;
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBox1.Location = new System.Drawing.Point(625, 8);
+            this.textBox1.Location = new System.Drawing.Point(895, 8);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
@@ -404,17 +406,46 @@
             // 
             this.flyoutPanel1.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
             this.flyoutPanel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.flyoutPanel1.Controls.Add(this.btnShift);
             this.flyoutPanel1.Controls.Add(this.btnEmail);
             this.flyoutPanel1.Controls.Add(this.btnHistory);
             this.flyoutPanel1.Controls.Add(this.btnRunAtStartup);
             this.flyoutPanel1.Controls.Add(this.btnHide);
-            this.flyoutPanel1.Location = new System.Drawing.Point(73, 362);
+            this.flyoutPanel1.Location = new System.Drawing.Point(56, 415);
             this.flyoutPanel1.Name = "flyoutPanel1";
             this.flyoutPanel1.OptionsButtonPanel.ButtonPanelContentAlignment = System.Drawing.ContentAlignment.MiddleCenter;
             this.flyoutPanel1.OptionsButtonPanel.ButtonPanelHeight = 100;
             this.flyoutPanel1.OwnerControl = this.btnSetting;
-            this.flyoutPanel1.Size = new System.Drawing.Size(221, 192);
+            this.flyoutPanel1.Size = new System.Drawing.Size(221, 233);
             this.flyoutPanel1.TabIndex = 3;
+            // 
+            // btnShift
+            // 
+            this.btnShift.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnShift.Appearance.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnShift.Appearance.Options.UseFont = true;
+            this.btnShift.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("btnShift.ImageOptions.Image")));
+            this.btnShift.Location = new System.Drawing.Point(4, 187);
+            this.btnShift.Name = "btnShift";
+            this.btnShift.Size = new System.Drawing.Size(211, 41);
+            this.btnShift.TabIndex = 3;
+            this.btnShift.Text = "Shift";
+            this.btnShift.Click += new System.EventHandler(this.btnShift_Click);
+            // 
+            // btnEmail
+            // 
+            this.btnEmail.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnEmail.Appearance.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnEmail.Appearance.Options.UseFont = true;
+            this.btnEmail.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("btnEmail.ImageOptions.Image")));
+            this.btnEmail.Location = new System.Drawing.Point(4, 145);
+            this.btnEmail.Name = "btnEmail";
+            this.btnEmail.Size = new System.Drawing.Size(211, 41);
+            this.btnEmail.TabIndex = 3;
+            this.btnEmail.Text = "Email";
+            this.btnEmail.Click += new System.EventHandler(this.btnEmail_Click);
             // 
             // btnHistory
             // 
@@ -463,33 +494,18 @@
             this.btnHide.Text = "Ẩn";
             this.btnHide.Click += new System.EventHandler(this.btnHide_Click);
             // 
-            // btnEmail
-            // 
-            this.btnEmail.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnEmail.Appearance.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnEmail.Appearance.Options.UseFont = true;
-            this.btnEmail.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("simpleButton1.ImageOptions.Image")));
-            this.btnEmail.Location = new System.Drawing.Point(4, 145);
-            this.btnEmail.Name = "btnEmail";
-            this.btnEmail.Size = new System.Drawing.Size(211, 41);
-            this.btnEmail.TabIndex = 3;
-            this.btnEmail.Text = "Email";
-            this.btnEmail.Click += new System.EventHandler(this.btnEmail_Click);
-            // 
             // FormMain
             // 
             this.Appearance.BackColor = System.Drawing.Color.White;
             this.Appearance.Options.UseBackColor = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1198, 618);
+            this.ClientSize = new System.Drawing.Size(1430, 680);
             this.Controls.Add(this.flyoutPanel1);
             this.Controls.Add(this.grdMain);
             this.Controls.Add(this.pnlHeader);
             this.Controls.Add(this.pnlFooter);
             this.IconOptions.Image = global::LineStatusClient.Properties.Resources.line;
-            this.MinimumSize = new System.Drawing.Size(1200, 650);
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Trạng thái dây chuyền";
@@ -541,6 +557,7 @@
         private DevExpress.XtraGrid.Columns.GridColumn colTotalDowntime;
         private DevExpress.XtraGrid.Columns.GridColumn colShift;
         private DevExpress.XtraEditors.SimpleButton btnEmail;
+        private DevExpress.XtraEditors.SimpleButton btnShift;
     }
 }
 
