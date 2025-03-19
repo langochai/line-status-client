@@ -256,6 +256,7 @@
     <Compile Include="Models\LineShift.cs" />
     <Compile Include="Models\Line_downtime_history.cs" />
     <Compile Include="Models\Line_mst.cs" />
+    <Compile Include="Models\SystemSettings.cs" />
     <Compile Include="Models\WorkShift.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -314,6 +315,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="line.ico" />
+    <None Include="Resources\timeEmail32.png" />
     <None Include="Resources\select32.png" />
     <None Include="Resources\deleteview32.png" />
     <None Include="Resources\line.png" />

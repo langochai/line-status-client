@@ -1,8 +1,10 @@
 ﻿using LineStatusClient.DTOs;
+using LineStatusClient.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Runtime;
 
@@ -12,6 +14,9 @@ namespace LineStatusClient.Common
     {
         public static string connectionString = "";
         public static IPEndPoint UDPAddress = null;
+        public static int ConfigID = 0;
+        public static int TimeSendEmail = 0;
+        public static string Password = "";
 
         public static (string, string, string, string, string) ReadSQLConnectionString()
         {
@@ -48,6 +53,23 @@ namespace LineStatusClient.Common
             jsonObj["Extra"] = Extra;
             File.WriteAllText(settingsFilePath, jsonObj.ToString());
             connectionString = $"Server={ServerName};Database={DBName};User Id={UserName};Password={Password};{Extra}";
+        }
+
+        public static void LoadConfig()
+        {
+            try
+            {
+                SystemSettings model = SQLHelper<SystemSettings>.FindAll().FirstOrDefault();
+                if (model != null)
+                {
+                    ConfigID = SQLUtilities.ToInt(model.ID);
+                    TimeSendEmail = SQLUtilities.ToInt(model.ConfigValue);
+                    Password = SQLUtilities.ToString(model.Password);
+                }
+            }
+            catch (Exception)
+            {
+            }
         }
     }
 }

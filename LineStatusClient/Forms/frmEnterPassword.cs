@@ -1,4 +1,6 @@
 ﻿using DevExpress.XtraEditors;
+using LineStatusClient.Common;
+using LineStatusClient.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,32 +17,68 @@ namespace LineStatusClient.Forms
     public partial class frmEnterPassword : XtraForm
     {
 
-        private string passwordFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Password.txt");
+        private bool isChangePass = false;
         public frmEnterPassword()
         {
             InitializeComponent();
         }
 
-        private void EnsurePasswordFileExists()
-        {
-            if (!File.Exists(passwordFilePath))
-            {
-                File.WriteAllText(passwordFilePath, "1"); // Tạo file với pass mặc định là "1"
-            }
-        }
-
+        string RePassword = "";
         private void btnConfirm_Click(object sender, EventArgs e)
         {
-            EnsurePasswordFileExists();
-            string storedPassword = File.ReadAllText(passwordFilePath).Trim();
-
-            if (txtPassword.Text.Trim() == storedPassword)
+            try
             {
-                this.DialogResult = DialogResult.OK;
+                if (isChangePass)
+                {
+                    string newPass = SQLUtilities.ToString(txtPassword.Text.Trim());
+                    if (RePassword == "")
+                    {
+                        RePassword = newPass;
+                        lb_Title.Text = "NHẬP LẠI MẬT KHẨU MỚI";
+                        txtPassword.Text = "";
+                        return;
+                    }
+                    if (RePassword != newPass)
+                    {
+                        MessageBox.Show("Mật khẩu mới không trùng nhau!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        RePassword = "";
+                        txtPassword.Text = "";
+                        lb_Title.Text = "NHẬP MẬT KHẨU MỚI";
+                        return;
+                    }
+                    SystemSettings model = SQLHelper<SystemSettings>.FindByID(Settings.ConfigID) ?? new SystemSettings();
+                    model.Password = SQLUtilities.ToString(txtPassword.Text.Trim());
+                    if (model.ID > 0)
+                    {
+                        if (!SQLHelper<SystemSettings>.UpdateModel(model).IsSuccess)
+                        {
+                            MessageBox.Show("Đã có lỗi sảy ra!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            btnChangePass_Click(null, null);
+                            return;
+                        }
+                    }
+                    MessageBox.Show("Hoàn thành!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Question);
+                    Settings.Password = model.Password;
+                    RePassword = "";
+                    txtPassword.Text = "";
+                    lb_Title.Text = "NHẬP MẬT KHẨU";
+                    isChangePass = false;
+                }
+                else
+                {
+                    if (txtPassword.Text.Trim() == Settings.Password)
+                    {
+                        this.DialogResult = DialogResult.OK;
+                        this.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Sai mật khẩu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
             }
-            else
+            catch (Exception)
             {
-                MessageBox.Show("Sai mật khẩu!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -50,6 +88,40 @@ namespace LineStatusClient.Forms
             {
                 btnConfirm_Click(sender, e); // Gọi sự kiện nút xác nhận khi nhấn Enter
             }
+        }
+
+        private void btnChangePass_Click(object sender, EventArgs e)
+        {
+            if (!isChangePass)
+            {
+                if (txtPassword.Text.Trim() == "")
+                {
+                    MessageBox.Show("Nhập mật khẩu cũ!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Question);
+                }
+                else if (txtPassword.Text.Trim() == Settings.Password)
+                {
+                    isChangePass = true;
+                    btnChangePass.Text = "Đóng";
+                    lb_Title.Text = "NHẬP MẬT KHẨU MỚI";
+                    txtPassword.Text = "";
+                }
+                else
+                {
+                    MessageBox.Show("Sai mật khẩu cũ!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            else
+            {
+                isChangePass = false;
+                btnChangePass.Text = "Đổi mật khẩu";
+                lb_Title.Text = "NHẬP MẬT KHẨU";
+                RePassword = "";
+            }
+        }
+
+        private void frmEnterPassword_Load(object sender, EventArgs e)
+        {
+            Settings.LoadConfig();
         }
     }
 }

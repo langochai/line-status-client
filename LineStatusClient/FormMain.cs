@@ -17,6 +17,7 @@ using LineStatusClient.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.Win32;
 using System;
+using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -39,13 +40,13 @@ namespace LineStatusClient
 
         private async void FormMain_Shown(object sender, EventArgs e)
         {
-            Task task1 = Task.Factory.StartNew(() =>
+            await Task.Run(() =>
             {
                 Settings.ReadSQLConnectionString();
+                Settings.LoadConfig();
                 LoadData();
-                Task.Run(() => ListenToQueue());
+                SynchData(); // Không cần tạo Thread thủ công
             });
-            await task1;
         }
 
         #region Count running and stopping time
@@ -241,48 +242,24 @@ namespace LineStatusClient
             }
         }
 
-        private void ListenToQueue()
+        private void SynchData()
         {
-            while (true)
+            try
             {
-                try
-                {
-                    using (var connection = new SqlConnection(Settings.connectionString))
-                    {
-                        connection.Open();
-                        using (var command = new SqlCommand("WAITFOR (RECEIVE TOP(1) conversation_handle FROM dbo.DataChangeQueue)", connection))
-                        {
-                            command.CommandTimeout = 60; // Tránh treo vĩnh viễn
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(Settings.connectionString);
+                string dbName = builder.InitialCatalog;
+                int identity = SQLUtilities.GetUniqueIdentity(); // Lấy identity từ DB
 
-                            using (var reader = command.ExecuteReader())
-                            {
-                                if (reader.Read())
-                                {
-                                    string conversationHandle = reader["conversation_handle"].ToString();
-                                    LoadData(); // Gọi hàm cập nhật dữ liệu
-
-                                    // Kết thúc hội thoại để dọn dẹp Queue
-                                    using (var endConvCommand = new SqlCommand("END CONVERSATION @handle", connection))
-                                    {
-                                        endConvCommand.Parameters.AddWithValue("@handle", conversationHandle);
-                                        endConvCommand.ExecuteNonQuery();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                catch (SqlException sqlEx)
-                {
-                    ErrorLogger.SaveLog("SQL Error in ListenToQueue: ", sqlEx.Message);
-                    Thread.Sleep(5000); // Nếu lỗi SQL, chờ 5 giây trước khi thử lại
-                }
-                catch (Exception ex)
-                {
-                    ErrorLogger.SaveLog("Error in ListenToQueue: ", ex.Message);
-                }
+                var dependency = new SqlDependencyEx(Settings.connectionString, dbName, "Line_downtime_history", identity: identity);
+                dependency.TableChanged += (sender, e) => { LoadData(); };
+                dependency.Start();
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.SaveLog("Error in SynchData: ", ex.ToString());
             }
         }
+
 
 
         #endregion
@@ -335,30 +312,120 @@ namespace LineStatusClient
         {
             flyoutPanel1.ShowBeakForm();
         }
-
+        frmHistory frmHistoryShow = null;
         private void btnHistory_Click(object sender, EventArgs e)
         {
             flyoutPanel1.HideBeakForm();
-            frmHistory frm = new frmHistory();
-            frm.ShowDialog();
+            if (frmHistoryShow == null || frmHistoryShow.IsDisposed)
+            {
+                frmHistoryShow = new frmHistory();
+                frmHistoryShow.Show();
+            }
+            else
+            {
+                if (frmHistoryShow.WindowState == FormWindowState.Minimized)
+                    frmHistoryShow.WindowState = FormWindowState.Normal;
+                frmHistoryShow.TopMost = true;  // Đảm bảo form hiển thị trên cùng
+                frmHistoryShow.TopMost = false; // Trả về trạng thái bình thường
+                frmHistoryShow.BringToFront();
+                frmHistoryShow.Activate();
+            }
         }
-
+        frmEnterPassword frmPasswordShow = null;
+        #region SHOW EMAIL FORM
+        frmEmail frmEmailShow = null;
         private void btnEmail_Click(object sender, EventArgs e)
         {
             flyoutPanel1.HideBeakForm();
-            frmEmail frm = new frmEmail();
-            frm.ShowDialog();
+            if (frmEmailShow == null || frmEmailShow.IsDisposed)
+            {
+                //frmEnterPassword frmPass = new frmEnterPassword();
+                //frmPass.FormClosed += (s, args) =>
+                //{
+                //    if (frmPass.DialogResult == DialogResult.OK)
+                //    {
+                //        frmEmailShow = new frmEmail();
+                //        frmEmailShow.Show();
+                //    }
+                //};
+                //frmPass.Show();
+                if (frmPasswordShow == null || frmPasswordShow.IsDisposed)
+                {
+                    frmPasswordShow = new frmEnterPassword();
+                    frmPasswordShow.FormClosed += (s, args) =>
+                    {
+                        if (frmPasswordShow.DialogResult == DialogResult.OK)
+                        {
+                            frmEmailShow = new frmEmail();
+                            frmEmailShow.Show();
+                        }
+                    };
+                    frmPasswordShow.Show();
+                }
+                else
+                {
+                    if (frmPasswordShow.WindowState == FormWindowState.Minimized)
+                        frmPasswordShow.WindowState = FormWindowState.Normal;
+                    frmPasswordShow.TopMost = true;  // Đảm bảo form hiển thị trên cùng
+                    frmPasswordShow.TopMost = false; // Trả về trạng thái bình thường
+                    frmPasswordShow.BringToFront();
+                    frmPasswordShow.Activate();
+                }
+            }
+            else
+            {
+                if (frmEmailShow.WindowState == FormWindowState.Minimized)
+                    frmEmailShow.WindowState = FormWindowState.Normal;
+                frmEmailShow.TopMost = true;  // Đảm bảo form hiển thị trên cùng
+                frmEmailShow.TopMost = false; // Trả về trạng thái bình thường
+                frmEmailShow.BringToFront();
+                frmEmailShow.Activate();
+            }
         }
+        #endregion
 
+        #region SHOW SHIFT FORM
+        frmShift frmShiftShow = null;
         private void btnShift_Click(object sender, EventArgs e)
         {
             flyoutPanel1.HideBeakForm();
-            frmEnterPassword frmPass = new frmEnterPassword();
-            if (frmPass.ShowDialog() != DialogResult.OK) return;
-
-            frmShift frm = new frmShift();
-            frm.ShowDialog();
+            if (frmShiftShow == null || frmShiftShow.IsDisposed)
+            {
+                if (frmPasswordShow == null || frmPasswordShow.IsDisposed)
+                {
+                    frmPasswordShow = new frmEnterPassword();
+                    frmPasswordShow.FormClosed += (s, args) =>
+                    {
+                        if (frmPasswordShow.DialogResult == DialogResult.OK)
+                        {
+                            frmEmailShow = new frmEmail();
+                            frmEmailShow.Show();
+                        }
+                    };
+                    frmPasswordShow.Show();
+                }
+                else
+                {
+                    if (frmPasswordShow.WindowState == FormWindowState.Minimized)
+                        frmPasswordShow.WindowState = FormWindowState.Normal;
+                    frmPasswordShow.TopMost = true;  // Đảm bảo form hiển thị trên cùng
+                    frmPasswordShow.TopMost = false; // Trả về trạng thái bình thường
+                    frmPasswordShow.BringToFront();
+                    frmPasswordShow.Activate();
+                }
+            }
+            else
+            {
+                if (frmShiftShow.WindowState == FormWindowState.Minimized)
+                    frmShiftShow.WindowState = FormWindowState.Normal;
+                frmShiftShow.TopMost = true;  // Đảm bảo form hiển thị trên cùng
+                frmShiftShow.TopMost = false; // Trả về trạng thái bình thường
+                frmShiftShow.BringToFront();
+                frmShiftShow.Activate();
+            }
         }
+        #endregion
+
         #endregion
     }
 }

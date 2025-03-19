@@ -16,7 +16,6 @@ namespace LineStatusClient.Forms.Email
     public partial class frmEmail : XtraForm
     {
 
-        private bool IsShowEnterPass = false;
         public frmEmail()
         {
             InitializeComponent();
@@ -24,7 +23,10 @@ namespace LineStatusClient.Forms.Email
 
         private void frmEmail_Load(object sender, EventArgs e)
         {
+            Settings.LoadConfig();
+            loadCbIsActive();
             loadEmail();
+            nmTimeEmail.Value = Settings.TimeSendEmail;
         }
 
 
@@ -34,18 +36,20 @@ namespace LineStatusClient.Forms.Email
             grdData.DataSource = ls;
         }
 
+        private void loadCbIsActive()
+        {
+            var listActiveStatus = new List<object>
+            {
+                new { IsActive = true, ActiveName = "Hoạt động" },
+                new { IsActive = false, ActiveName = "Không hoạt động" }
+            };
+            cb_IsAtive.DataSource = listActiveStatus;
+            cb_IsAtive.DisplayMember = "ActiveName";
+            cb_IsAtive.ValueMember = "IsActive";
+        }
+
         private void btnAdd_Click(object sender, EventArgs e)
         {
-
-            if (!IsShowEnterPass)
-            {
-                frmEnterPassword frmPass = new frmEnterPassword();
-                if (frmPass.ShowDialog() == DialogResult.OK)
-                    IsShowEnterPass = true;
-                else
-                    return;
-            }
-
             frmEmailDetail frm = new frmEmailDetail();
             if (frm.ShowDialog() == DialogResult.OK)
             {
@@ -55,15 +59,6 @@ namespace LineStatusClient.Forms.Email
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            if (!IsShowEnterPass)
-            {
-                frmEnterPassword frmPass = new frmEnterPassword();
-                if (frmPass.ShowDialog() == DialogResult.OK)
-                    IsShowEnterPass = true;
-                else
-                    return;
-            }
-
             int id = SQLUtilities.ToInt(grvData.GetFocusedRowCellValue(colID));
             if (id <= 0) return;
             LineEmailConfig model = SQLHelper<LineEmailConfig>.FindByID(id);
@@ -77,15 +72,6 @@ namespace LineStatusClient.Forms.Email
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            if (!IsShowEnterPass)
-            {
-                frmEnterPassword frmPass = new frmEnterPassword();
-                if (frmPass.ShowDialog() == DialogResult.OK)
-                    IsShowEnterPass = true;
-                else
-                    return;
-            }
-
             int id = SQLUtilities.ToInt(grvData.GetFocusedRowCellValue(colID));
             string email = SQLUtilities.ToString(grvData.GetFocusedRowCellValue(colEmail));
             if (id <= 0) return;
@@ -108,6 +94,27 @@ namespace LineStatusClient.Forms.Email
         private void grvData_DoubleClick(object sender, EventArgs e)
         {
             btnEdit_Click(null, null);
+        }
+
+        private void btnSaveTimeSendEmail_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SystemSettings model = SQLHelper<SystemSettings>.FindByID(Settings.ConfigID) ?? new SystemSettings();
+                model.ConfigValue = SQLUtilities.ToInt(nmTimeEmail.Value);
+                if (model.ID > 0)
+                {
+                    if (!SQLHelper<SystemSettings>.UpdateModel(model).IsSuccess)
+                    {
+                        MessageBox.Show("Đã có lỗi sảy ra!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    };
+                    Settings.TimeSendEmail = model.ConfigValue;
+                    MessageBox.Show("Thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Question);
+                }
+            }
+            catch (Exception)
+            {
+            }
         }
     }
 }

@@ -34,7 +34,7 @@
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.btnEditEmail = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
-            this.btnDeleteEmail = new System.Windows.Forms.ToolStripButton();
+            this.btnDelete = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.grdData = new DevExpress.XtraGrid.GridControl();
             this.grvData = new DevExpress.XtraGrid.Views.Grid.GridView();
@@ -43,11 +43,20 @@
             this.colName = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colEmail = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colIsActive = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.cb_IsActive = new DevExpress.XtraEditors.Repository.RepositoryItemComboBox();
+            this.cb_IsAtive = new DevExpress.XtraEditors.Repository.RepositoryItemSearchLookUpEdit();
+            this.repositoryItemSearchLookUpEdit1View = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.col_cbIsActive = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.col_cbActiveName = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.nmTimeEmail = new System.Windows.Forms.NumericUpDown();
+            this.label1 = new System.Windows.Forms.Label();
+            this.btnSaveTimeSendEmail = new DevExpress.XtraEditors.SimpleButton();
+            this.label2 = new System.Windows.Forms.Label();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grdData)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.grvData)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.cb_IsActive)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cb_IsAtive)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repositoryItemSearchLookUpEdit1View)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nmTimeEmail)).BeginInit();
             this.SuspendLayout();
             // 
             // toolStrip1
@@ -59,7 +68,7 @@
             this.toolStripSeparator4,
             this.btnEditEmail,
             this.toolStripSeparator6,
-            this.btnDeleteEmail,
+            this.btnDelete,
             this.toolStripSeparator7});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -108,20 +117,20 @@
             this.toolStripSeparator6.Name = "toolStripSeparator6";
             this.toolStripSeparator6.Size = new System.Drawing.Size(6, 64);
             // 
-            // btnDeleteEmail
+            // btnDelete
             // 
-            this.btnDeleteEmail.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
-            this.btnDeleteEmail.Image = ((System.Drawing.Image)(resources.GetObject("btnDeleteEmail.Image")));
-            this.btnDeleteEmail.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.btnDeleteEmail.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnDeleteEmail.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnDeleteEmail.Margin = new System.Windows.Forms.Padding(4);
-            this.btnDeleteEmail.Name = "btnDeleteEmail";
-            this.btnDeleteEmail.Size = new System.Drawing.Size(92, 56);
-            this.btnDeleteEmail.Text = "Xóa email";
-            this.btnDeleteEmail.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this.btnDeleteEmail.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnDeleteEmail.Click += new System.EventHandler(this.btnDelete_Click);
+            this.btnDelete.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
+            this.btnDelete.Image = ((System.Drawing.Image)(resources.GetObject("btnDelete.Image")));
+            this.btnDelete.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.btnDelete.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.btnDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnDelete.Margin = new System.Windows.Forms.Padding(4);
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.Size = new System.Drawing.Size(92, 56);
+            this.btnDelete.Text = "Xóa email";
+            this.btnDelete.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.btnDelete.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
             // toolStripSeparator7
             // 
@@ -136,7 +145,7 @@
             this.grdData.MainView = this.grvData;
             this.grdData.Name = "grdData";
             this.grdData.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
-            this.cb_IsActive});
+            this.cb_IsAtive});
             this.grdData.Size = new System.Drawing.Size(1115, 537);
             this.grdData.TabIndex = 3;
             this.grdData.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
@@ -218,7 +227,7 @@
             // colIsActive
             // 
             this.colIsActive.Caption = "Trạng thái";
-            this.colIsActive.ColumnEdit = this.cb_IsActive;
+            this.colIsActive.ColumnEdit = this.cb_IsAtive;
             this.colIsActive.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Custom;
             this.colIsActive.FieldName = "IsActive";
             this.colIsActive.Name = "colIsActive";
@@ -226,21 +235,104 @@
             this.colIsActive.VisibleIndex = 3;
             this.colIsActive.Width = 251;
             // 
-            // cb_IsActive
+            // cb_IsAtive
             // 
-            this.cb_IsActive.AutoHeight = false;
-            this.cb_IsActive.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            this.cb_IsAtive.AutoHeight = false;
+            this.cb_IsAtive.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.cb_IsActive.Items.AddRange(new object[] {
-            "Không hoạt động",
-            "Hoạt động"});
-            this.cb_IsActive.Name = "cb_IsActive";
+            this.cb_IsAtive.Name = "cb_IsAtive";
+            this.cb_IsAtive.NullText = "";
+            this.cb_IsAtive.PopupView = this.repositoryItemSearchLookUpEdit1View;
+            // 
+            // repositoryItemSearchLookUpEdit1View
+            // 
+            this.repositoryItemSearchLookUpEdit1View.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
+            this.col_cbIsActive,
+            this.col_cbActiveName});
+            this.repositoryItemSearchLookUpEdit1View.FocusRectStyle = DevExpress.XtraGrid.Views.Grid.DrawFocusRectStyle.RowFocus;
+            this.repositoryItemSearchLookUpEdit1View.Name = "repositoryItemSearchLookUpEdit1View";
+            this.repositoryItemSearchLookUpEdit1View.OptionsSelection.EnableAppearanceFocusedCell = false;
+            this.repositoryItemSearchLookUpEdit1View.OptionsView.ShowGroupPanel = false;
+            // 
+            // col_cbIsActive
+            // 
+            this.col_cbIsActive.Caption = "IsActive";
+            this.col_cbIsActive.FieldName = "IsActive";
+            this.col_cbIsActive.Name = "col_cbIsActive";
+            // 
+            // col_cbActiveName
+            // 
+            this.col_cbActiveName.Caption = "ActiveName";
+            this.col_cbActiveName.FieldName = "ActiveName";
+            this.col_cbActiveName.Name = "col_cbActiveName";
+            this.col_cbActiveName.Visible = true;
+            this.col_cbActiveName.VisibleIndex = 0;
+            // 
+            // nmTimeEmail
+            // 
+            this.nmTimeEmail.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
+            this.nmTimeEmail.Location = new System.Drawing.Point(511, 19);
+            this.nmTimeEmail.Maximum = new decimal(new int[] {
+            9999,
+            0,
+            0,
+            0});
+            this.nmTimeEmail.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nmTimeEmail.Name = "nmTimeEmail";
+            this.nmTimeEmail.Size = new System.Drawing.Size(113, 26);
+            this.nmTimeEmail.TabIndex = 4;
+            this.nmTimeEmail.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
+            this.label1.Location = new System.Drawing.Point(347, 22);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(158, 20);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "Thời gian gửi email";
+            // 
+            // btnSaveTimeSendEmail
+            // 
+            this.btnSaveTimeSendEmail.Appearance.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
+            this.btnSaveTimeSendEmail.Appearance.Options.UseFont = true;
+            this.btnSaveTimeSendEmail.Location = new System.Drawing.Point(670, 15);
+            this.btnSaveTimeSendEmail.Name = "btnSaveTimeSendEmail";
+            this.btnSaveTimeSendEmail.Size = new System.Drawing.Size(63, 34);
+            this.btnSaveTimeSendEmail.TabIndex = 6;
+            this.btnSaveTimeSendEmail.Text = "SAVE";
+            this.btnSaveTimeSendEmail.Click += new System.EventHandler(this.btnSaveTimeSendEmail_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
+            this.label2.Location = new System.Drawing.Point(623, 22);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(41, 20);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "MIN";
             // 
             // frmEmail
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1115, 601);
+            this.Controls.Add(this.nmTimeEmail);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.btnSaveTimeSendEmail);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.grdData);
             this.Controls.Add(this.toolStrip1);
             this.IconOptions.Image = global::LineStatusClient.Properties.Resources.line;
@@ -252,7 +344,9 @@
             this.toolStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grdData)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.grvData)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.cb_IsActive)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cb_IsAtive)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repositoryItemSearchLookUpEdit1View)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nmTimeEmail)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -265,7 +359,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripButton btnEditEmail;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
-        private System.Windows.Forms.ToolStripButton btnDeleteEmail;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
         private DevExpress.XtraGrid.GridControl grdData;
         private DevExpress.XtraGrid.Views.Grid.GridView grvData;
@@ -273,7 +366,15 @@
         private DevExpress.XtraGrid.Columns.GridColumn colName;
         private DevExpress.XtraGrid.Columns.GridColumn colEmail;
         private DevExpress.XtraGrid.Columns.GridColumn colIsActive;
-        private DevExpress.XtraEditors.Repository.RepositoryItemComboBox cb_IsActive;
         private DevExpress.XtraGrid.Columns.GridColumn colID;
+        private DevExpress.XtraEditors.Repository.RepositoryItemSearchLookUpEdit cb_IsAtive;
+        private DevExpress.XtraGrid.Views.Grid.GridView repositoryItemSearchLookUpEdit1View;
+        private DevExpress.XtraGrid.Columns.GridColumn col_cbIsActive;
+        private DevExpress.XtraGrid.Columns.GridColumn col_cbActiveName;
+        private System.Windows.Forms.ToolStripButton btnDelete;
+        private System.Windows.Forms.NumericUpDown nmTimeEmail;
+        private System.Windows.Forms.Label label1;
+        private DevExpress.XtraEditors.SimpleButton btnSaveTimeSendEmail;
+        private System.Windows.Forms.Label label2;
     }
 }

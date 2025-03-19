@@ -20,7 +20,7 @@ namespace LineStatusClient.Forms.Email
         private bool IsShowEnterPass = false;
         public frmShift()
         {
-            InitializeComponent();
+            InitializeComponent();  
         }
 
         private void frmShift_Load(object sender, EventArgs e)
@@ -187,7 +187,6 @@ namespace LineStatusClient.Forms.Email
 
 
         #endregion
-
 
         private void RestoreSelectedRows()
         {

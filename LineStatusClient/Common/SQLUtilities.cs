@@ -366,6 +366,33 @@ namespace LineStatusClient.Common
             }
         }
 
+        public static int GetUniqueIdentity()
+        {
+            using (var connection = new SqlConnection(Settings.connectionString))
+            {
+                connection.Open();
+
+                // Kiểm tra xem máy đã có identity chưa
+                using (var command = new SqlCommand("SELECT Id FROM IdentityManager WHERE MachineName = @MachineName", connection))
+                {
+                    command.Parameters.AddWithValue("@MachineName", Environment.MachineName);
+                    var result = command.ExecuteScalar();
+
+                    if (result != null)
+                    {
+                        return (int)result; // Trả về ID đã cấp
+                    }
+                }
+
+                // Nếu chưa có, tạo mới
+                using (var command = new SqlCommand("INSERT INTO IdentityManager (MachineName) OUTPUT INSERTED.Id VALUES (@MachineName)", connection))
+                {
+                    command.Parameters.AddWithValue("@MachineName", Environment.MachineName);
+                    return (int)command.ExecuteScalar(); // Lấy ID mới
+                }
+            }
+        }
+
         /// <summary>
         /// Use this shit if the current time of DB is not correctly set
         /// </summary>

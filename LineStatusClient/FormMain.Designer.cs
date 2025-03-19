@@ -35,7 +35,7 @@
             this.grdMain = new DevExpress.XtraGrid.GridControl();
             this.grvMain = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.colNo = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.colLinecode = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.colLinecodeName = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colTotalRunningTime = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colTotalDowntime = new DevExpress.XtraGrid.Columns.GridColumn();
             this.colStatusText = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -62,6 +62,7 @@
             this.btnHistory = new DevExpress.XtraEditors.SimpleButton();
             this.btnRunAtStartup = new DevExpress.XtraEditors.SimpleButton();
             this.btnHide = new DevExpress.XtraEditors.SimpleButton();
+            this.colLinecodoCode = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)(this.pnlHeader)).BeginInit();
             this.pnlHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grdMain)).BeginInit();
@@ -111,7 +112,7 @@
             // grvMain
             // 
             this.grvMain.Appearance.HeaderPanel.BackColor = System.Drawing.Color.Transparent;
-            this.grvMain.Appearance.HeaderPanel.Font = new System.Drawing.Font("Tahoma", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.grvMain.Appearance.HeaderPanel.Font = new System.Drawing.Font("Tahoma", 20.25F);
             this.grvMain.Appearance.HeaderPanel.Options.UseBackColor = true;
             this.grvMain.Appearance.HeaderPanel.Options.UseBorderColor = true;
             this.grvMain.Appearance.HeaderPanel.Options.UseFont = true;
@@ -120,11 +121,12 @@
             this.grvMain.Appearance.HeaderPanel.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
             this.grvMain.Appearance.HeaderPanel.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
             this.grvMain.Appearance.HeaderPanel.TextOptions.WordWrap = DevExpress.Utils.WordWrap.Wrap;
-            this.grvMain.Appearance.Row.Font = new System.Drawing.Font("Tahoma", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.grvMain.Appearance.Row.Font = new System.Drawing.Font("Tahoma", 20.25F);
             this.grvMain.Appearance.Row.Options.UseFont = true;
             this.grvMain.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.colNo,
-            this.colLinecode,
+            this.colLinecodoCode,
+            this.colLinecodeName,
             this.colTotalRunningTime,
             this.colTotalDowntime,
             this.colStatusText,
@@ -161,18 +163,17 @@
             this.colNo.VisibleIndex = 0;
             this.colNo.Width = 60;
             // 
-            // colLinecode
+            // colLinecodeName
             // 
-            this.colLinecode.AppearanceCell.Options.UseTextOptions = true;
-            this.colLinecode.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.colLinecode.AppearanceCell.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
-            this.colLinecode.Caption = "Dây chuyền";
-            this.colLinecode.FieldName = "line_nm";
-            this.colLinecode.Name = "colLinecode";
-            this.colLinecode.OptionsColumn.ReadOnly = true;
-            this.colLinecode.Visible = true;
-            this.colLinecode.VisibleIndex = 1;
-            this.colLinecode.Width = 264;
+            this.colLinecodeName.AppearanceCell.Options.UseTextOptions = true;
+            this.colLinecodeName.AppearanceCell.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
+            this.colLinecodeName.Caption = "Tên chuyền";
+            this.colLinecodeName.FieldName = "line_nm";
+            this.colLinecodeName.Name = "colLinecodeName";
+            this.colLinecodeName.OptionsColumn.ReadOnly = true;
+            this.colLinecodeName.Visible = true;
+            this.colLinecodeName.VisibleIndex = 2;
+            this.colLinecodeName.Width = 299;
             // 
             // colTotalRunningTime
             // 
@@ -185,8 +186,8 @@
             this.colTotalRunningTime.Name = "colTotalRunningTime";
             this.colTotalRunningTime.OptionsColumn.ReadOnly = true;
             this.colTotalRunningTime.Visible = true;
-            this.colTotalRunningTime.VisibleIndex = 2;
-            this.colTotalRunningTime.Width = 175;
+            this.colTotalRunningTime.VisibleIndex = 3;
+            this.colTotalRunningTime.Width = 217;
             // 
             // colTotalDowntime
             // 
@@ -199,8 +200,8 @@
             this.colTotalDowntime.Name = "colTotalDowntime";
             this.colTotalDowntime.OptionsColumn.AllowEdit = false;
             this.colTotalDowntime.Visible = true;
-            this.colTotalDowntime.VisibleIndex = 3;
-            this.colTotalDowntime.Width = 175;
+            this.colTotalDowntime.VisibleIndex = 4;
+            this.colTotalDowntime.Width = 217;
             // 
             // colStatusText
             // 
@@ -212,8 +213,8 @@
             this.colStatusText.Name = "colStatusText";
             this.colStatusText.OptionsColumn.ReadOnly = true;
             this.colStatusText.Visible = true;
-            this.colStatusText.VisibleIndex = 4;
-            this.colStatusText.Width = 198;
+            this.colStatusText.VisibleIndex = 5;
+            this.colStatusText.Width = 244;
             // 
             // colProductcount
             // 
@@ -227,8 +228,8 @@
             this.colProductcount.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] {
             new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "product_count", "Tổng = {0:0.##}")});
             this.colProductcount.Visible = true;
-            this.colProductcount.VisibleIndex = 5;
-            this.colProductcount.Width = 207;
+            this.colProductcount.VisibleIndex = 6;
+            this.colProductcount.Width = 256;
             // 
             // colStatus
             // 
@@ -246,8 +247,8 @@
             this.colShift.Name = "colShift";
             this.colShift.OptionsColumn.AllowEdit = false;
             this.colShift.Visible = true;
-            this.colShift.VisibleIndex = 6;
-            this.colShift.Width = 110;
+            this.colShift.VisibleIndex = 7;
+            this.colShift.Width = 165;
             // 
             // menuNotify
             // 
@@ -494,6 +495,18 @@
             this.btnHide.Text = "Ẩn";
             this.btnHide.Click += new System.EventHandler(this.btnHide_Click);
             // 
+            // colLinecodoCode
+            // 
+            this.colLinecodoCode.AppearanceCell.Options.UseTextOptions = true;
+            this.colLinecodoCode.AppearanceCell.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
+            this.colLinecodoCode.AppearanceCell.TextOptions.WordWrap = DevExpress.Utils.WordWrap.Wrap;
+            this.colLinecodoCode.Caption = "Mã chuyền";
+            this.colLinecodoCode.FieldName = "line_code";
+            this.colLinecodoCode.Name = "colLinecodoCode";
+            this.colLinecodoCode.Visible = true;
+            this.colLinecodoCode.VisibleIndex = 1;
+            this.colLinecodoCode.Width = 157;
+            // 
             // FormMain
             // 
             this.Appearance.BackColor = System.Drawing.Color.White;
@@ -533,7 +546,7 @@
         private System.Windows.Forms.ToolStripMenuItem mnitemShow;
         private System.Windows.Forms.ToolStripMenuItem mnitemExit;
         private System.Windows.Forms.NotifyIcon notifyIcon;
-        private DevExpress.XtraGrid.Columns.GridColumn colLinecode;
+        private DevExpress.XtraGrid.Columns.GridColumn colLinecodeName;
         private DevExpress.XtraGrid.Columns.GridColumn colTotalRunningTime;
         private DevExpress.XtraGrid.Columns.GridColumn colStatusText;
         private DevExpress.XtraGrid.Columns.GridColumn colProductcount;
@@ -558,6 +571,7 @@
         private DevExpress.XtraGrid.Columns.GridColumn colShift;
         private DevExpress.XtraEditors.SimpleButton btnEmail;
         private DevExpress.XtraEditors.SimpleButton btnShift;
+        private DevExpress.XtraGrid.Columns.GridColumn colLinecodoCode;
     }
 }
 

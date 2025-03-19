@@ -20,6 +20,7 @@ namespace LineStatusClient.Froms
 {
     public partial class frmHistory : XtraForm
     {
+        List<LineShiftDT0_W> list_LineShift = new List<LineShiftDT0_W>();
         public frmHistory()
         {
             InitializeComponent();
@@ -52,15 +53,18 @@ namespace LineStatusClient.Froms
             try
             {
                 DateTime date = Convert.ToDateTime(dtpDateTime.EditValue).Date;
-                DateTime dateStart = date.AddHours(8); // Bắt đầu từ 06:00:00 hôm nay
-                DateTime dateEnd = date.AddDays(1).AddHours(7).AddMinutes(59).AddSeconds(59); // Kết thúc lúc 05:59:59 ngày mai
-
-                string strDateStart = dateStart.ToString("yyyy-MM-dd HH:mm:ss");
-                string strDateEnd = dateEnd.ToString("yyyy-MM-dd HH:mm:ss");
-
                 string lineCode = SQLUtilities.ToString(cb_Line.EditValue);
                 int shift = SQLUtilities.ToInt(cb_Shift.EditValue);
                 if (shift <= 0 || lineCode == "") return;
+
+                LineShiftDT0_W shiftModel = list_LineShift.FirstOrDefault(x => x.ShiftCode == shift) ?? new LineShiftDT0_W();
+
+                TimeSpan startSpan = TimeSpan.Parse(shiftModel.StartTime);
+                TimeSpan endSpan = TimeSpan.Parse(shiftModel.EndTime);
+                DateTime dateStart = date + startSpan;
+                DateTime dateEnd = (startSpan > endSpan) ? date.AddDays(1) + endSpan : date + endSpan;
+                string strDateStart = dateStart.ToString("yyyy-MM-dd HH:mm:ss");
+                string strDateEnd = dateEnd.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var allLineStatus = SQLHelper<Line_downtime_history_DTO>.ProcedureToList("spGetLineStatusChangeTime",
                 new string[] { "@DateStart", "@DateEnd", "@LineCode", "@Shift" },
@@ -79,7 +83,7 @@ namespace LineStatusClient.Froms
                 string lineCode = cb_Line.EditValue.ToString().Trim();
                 if (lineCode == "") return;
 
-                List<LineShiftDT0_W> list_LineShift = SQLHelper<LineShiftDT0_W>.SqlToList($"select ls.*, ws.ShiftCode, ws.ShiftName, ws.StartTime, ws.EndTime from [LineShift] ls " +
+                list_LineShift = SQLHelper<LineShiftDT0_W>.SqlToList($"select ls.*, ws.ShiftCode, ws.ShiftName, ws.StartTime, ws.EndTime from [LineShift] ls " +
                     $"inner join WorkShift ws on ws.ID = ls.WorkShiftID " +
                     $"where ls.LineCode = {lineCode}").ToList();
 
@@ -130,11 +134,17 @@ namespace LineStatusClient.Froms
             {
                 try
                 {
-                    var groupedProductData = data
+                    var groupedStatusData = data
                         .Select((item, index) => new { Item = item, Index = index }) // Thêm chỉ mục để theo dõi vị trí
                         .Where((x, i) => i == 0 || x.Item.status != data[i - 1].status) // Chỉ giữ dòng đầu mỗi nhóm liên tiếp
                         .Select(x => x.Item) // Lấy lại đối tượng gốc
                         .ToList();
+                    var groupedProductData = data
+                        .Select((item, index) => new { Item = item, Index = index }) // Thêm chỉ mục
+                        .GroupBy(x => new { x.Item.product_count, GroupKey = GetGroupKey(data, x.Index) }) // Nhóm theo product_count & vị trí liên tiếp
+                        .Select(g => g.Last().Item) // Lấy phần tử cuối mỗi nhóm
+                        .ToList();
+
 
                     btnExportExcel.BeginInvoke(new Action(() => { btnExportExcel.Enabled = false; }));
                     string excelFilename = $"template.xlsx";
@@ -149,7 +159,7 @@ namespace LineStatusClient.Froms
 
                             /// tính theo status
                             int col = 2;
-                            foreach (var result in groupedProductData)
+                            foreach (var result in groupedStatusData)
                             {
                                 newSheet.Cell(3, col).Value = result.timestamp.ToString("HH:mm:ss");
                                 switch (result.status)
@@ -181,7 +191,7 @@ namespace LineStatusClient.Froms
                             }
                             // tính theo product_count
                             int rowStart = 8;
-                            foreach (var result in data)
+                            foreach (var result in groupedProductData)
                             {
                                 newSheet.Cell(rowStart, 1).Value = result.timestamp.ToString("HH:mm:ss");
                                 newSheet.Cell(rowStart, 2).Value = result.product_count;
@@ -239,6 +249,19 @@ namespace LineStatusClient.Froms
         #endregion
 
         #region OTHERS
+
+        private static int GetGroupKey(List<Line_downtime_history_DTO> data, int index)
+        {
+            if (index == 0) return 0;
+
+            int key = 0;
+            for (int i = 1; i <= index; i++)
+            {
+                if (data[i].product_count != data[i - 1].product_count)
+                    key++; // Tăng key khi thay đổi product_count
+            }
+            return key;
+        }
 
         private void cb_Line_EditValueChanged(object sender, EventArgs e)
         {
